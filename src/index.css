@@ -1,0 +1,112 @@
+﻿@import "tailwindcss";
+
+@theme {
+  --font-sf: "SF Pro Display", "-apple-system", "BlinkMacSystemFont", "sans-serif";
+
+  --color-primary-light: #000000;
+  --color-secondary-light: #3c3c43;
+
+  --color-primary-dark: #ffffff;
+  --color-secondary-dark: #ebebf5;
+
+  --color-weather-purple: #48319d;
+  --color-weather-dark-blue: #1f1d47;
+  --color-weather-magenta: #c427fb;
+  --color-weather-lavender: #e0d9ff;
+
+  --color-bg-bottom: #3a3f54;
+
+  --bg-gradient-weather-1: linear-gradient(180deg, #2e335a 0%, #1c1b33 100%);
+  --bg-gradient-weather-2: linear-gradient(180deg, #5936b4 0%, #362a84 100%);
+  --bg-gradient-weather-3: linear-gradient(180deg, #aec9ff 0%, #083072 100%);
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Thin.otf") format("opentype");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Ultralight.otf") format("opentype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Semibold.otf") format("opentype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Heavy.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "SF Pro Display";
+  src: url("/fonts/SF-Pro-Display-Black.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  html,
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: var(--font-sf);
+    font-synthesis: none;
+    background-color: #a499c0;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.weather-temp-thin {
+  font-family: var(--font-sf);
+  font-weight: 100;
+}
