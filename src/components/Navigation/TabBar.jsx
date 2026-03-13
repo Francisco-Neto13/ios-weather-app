@@ -1,5 +1,5 @@
 import React from 'react';
-import TabBarBack from './TabBarBack';
+import TabBarBack from './TabBarBack.jsx';
 import TabBarFront from './TabBarFront.jsx';
 
 const TabBar = () => {

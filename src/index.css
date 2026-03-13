@@ -62,3 +62,14 @@
   font-family: var(--font-sf);
   font-weight: 100;
 }
+
+.ios-scroll-hidden {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.ios-scroll-hidden::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
