@@ -8,7 +8,7 @@ const AppLayout = ({ children }) => {
         style={{ overflow: "clip" }}
       >
         <img
-          src="/background.png"
+          src="../../../public/images/background.png"
           alt="background"
           className="absolute inset-0 w-full h-full object-cover z-0"
         />
