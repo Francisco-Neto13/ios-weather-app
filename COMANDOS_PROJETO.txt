@@ -1,0 +1,39 @@
+﻿COMANDOS DO PROJETO
+
+Este projeto foi criado com o template React + Vite.
+
+Depois de clonar o repositório, rode os comandos abaixo na pasta raiz do projeto.
+
+Instalar dependências
+Comando:
+npm install
+
+Rodar em desenvolvimento
+Comando:
+npm run dev
+
+Gerar a build de produção
+Comando:
+npm run build
+
+Visualizar a build localmente
+Comando:
+npm run preview
+
+Rodar o lint
+Comando:
+npm run lint
+
+Sequência mais comum
+1. npm install
+2. npm run dev
+
+Sequência para validar antes de entregar
+1. npm run build
+2. npm run lint
+
+Observação
+- Hoje a interface atual não precisa de .env para abrir.
+- Se a integração com OpenWeather for feita depois, aí sim será necessário adicionar algo como:
+  - VITE_OPENWEATHER_API_KEY=...
+

@@ -9,6 +9,7 @@ import FeelsLikeWidget from './FeelsLikeWidget';
 import HumidityWidget from './HumidityWidget';
 import VisibilityWidget from './VisibilityWidget';
 import PressureWidget from './PressureWidget';
+import { widgetGridRowStyle } from './styles/widgetLayoutStyles';
 
 const WeatherDetails = ({
   scrollRef = null,
@@ -116,22 +117,22 @@ const WeatherDetails = ({
         >
           <MediumWidget />
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '14px' }}>
+          <div style={widgetGridRowStyle}>
             <UVIndexWidget />
             <SunriseWidget />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '14px' }}>
+          <div style={widgetGridRowStyle}>
             <WindWidget />
             <RainfallWidget />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '14px' }}>
+          <div style={widgetGridRowStyle}>
             <FeelsLikeWidget />
             <HumidityWidget />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '14px' }}>
+          <div style={widgetGridRowStyle}>
             <VisibilityWidget />
             <PressureWidget />
           </div>

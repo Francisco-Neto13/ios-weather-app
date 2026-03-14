@@ -1,11 +1,11 @@
 ﻿import React, { useEffect, useRef } from 'react';
 
 const weatherWidgetIcons = {
-  moonCloudRain: '/widgets/moon-cloud-rain.png',
-  moonCloudWind: '/widgets/moon-cloud-wind.png',
-  sunCloudAngledRain: '/widgets/sun-cloud-angled-rain.png',
-  sunCloudRain: '/widgets/sun-cloud-rain.png',
-  tornado: '/widgets/tornado.png',
+  moonCloudRain: '/widgets/small/moon-cloud-rain.png',
+  moonCloudWind: '/widgets/small/moon-cloud-wind.png',
+  sunCloudAngledRain: '/widgets/small/sun-cloud-angled-rain.png',
+  sunCloudRain: '/widgets/small/sun-cloud-rain.png',
+  tornado: '/widgets/small/tornado.png',
 };
 
 const ForecastCard = ({ hour, icon, degree, precipitation, isActive = false }) => {
