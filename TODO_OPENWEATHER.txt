@@ -1,0 +1,326 @@
+﻿TODO - integrar dados reais com OpenWeather
+
+Objetivo
+- Trocar todos os mocks estáticos de clima por dados reais da OpenWeather.
+- Manter o layout e a lógica visual atual.
+- Concentrar os dados em um único ponto para evitar cidade/temperatura diferentes entre Home, Forecast e WeatherDetails.
+
+Resumo rápido da arquitetura atual
+- App.jsx é o melhor lugar para virar a fonte principal de dados.
+- WeatherInfo.jsx mostra os dados principais da Home.
+- Modal.jsx distribui os dados para o forecast e para os cards de detalhes.
+- SearchAdd.jsx hoje usa uma lista estática de cidades salvas.
+- Os widgets pequenos e grandes de clima usam imagens locais em public/widgets.
+
+Recomendação de fonte de dados
+- Criar um client para OpenWeather e um mapper de resposta para a UI.
+- Recomendado criar estes arquivos novos:
+  - src/services/openWeather.js
+  - src/lib/weatherMappers.js
+  - src/lib/weatherArtMap.js
+  - .env com VITE_OPENWEATHER_API_KEY=...
+
+Endpoints oficiais sugeridos
+- Geocoding API
+  - http://api.openweathermap.org/geo/1.0/direct?q={city name},{state code},{country code}&limit={limit}&appid={API key}
+  - Usar para busca de cidade no SearchAdd.
+- Current Weather Data
+  - https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
+  - Usar com units=metric e lang=pt_br ou en, conforme desejado.
+- 5 Day / 3 Hour Forecast
+  - https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={API key}
+  - Serve para forecast, mas é 3 em 3 horas.
+- Air Pollution API
+  - http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={API key}
+  - Usar para o card de qualidade do ar.
+- Weather Conditions / Icons
+  - https://openweathermap.org/weather-conditions
+  - Usar weather[0].id e weather[0].icon para mapear a arte local.
+
+Atenção para limitações da OpenWeather
+- Current Weather Data não entrega UVI.
+- Current Weather Data não entrega dew point.
+- Forecast 5 days entrega previsão em passos de 3 horas, não horário real.
+- Forecast 5 days cobre 5 dias, não 7 ou 8 dias completos.
+- One Call 3.0 entrega current + hourly + daily + alerts, mas a documentação atual indica que ele é subscription only.
+
+Decisões que a outra pessoa vai precisar tomar
+- Se o projeto vai usar só endpoints gratuitos:
+  - usar current + forecast 5 days + geocoding + air pollution
+  - aceitar que o "Hourly Forecast" será, na prática, um "3-hour step forecast"
+  - aceitar que o "Weekly Forecast" terá, no máximo, 5 dias ou será agregado manualmente
+  - UV Index vai precisar ficar oculto, com fallback, ou vir de outra fonte
+  - dew point do card de humidity vai precisar ser calculado manualmente ou removido
+- Se o projeto vai usar One Call 3.0 pago:
+  - fica mais fácil preencher UVI
+  - fica mais fácil preencher hourly real
+  - fica mais fácil preencher daily de até 8 dias
+
+Arquivos que precisam ser alterados
+
+1. src/App.jsx
+- Transformar em fonte única de verdade para:
+  - localização selecionada
+  - clima atual
+  - forecast
+  - qualidade do ar
+  - estado de loading/error
+  - cidades salvas ou recentes
+- Fazer as chamadas para OpenWeather aqui ou em um hook/serviço chamado daqui.
+- Passar dados reais como props para:
+  - WeatherInfo
+  - Modal
+  - SearchAdd
+
+2. src/components/WeatherInfo/WeatherInfo.jsx
+- Hoje tem defaults estáticos:
+  - city = Montreal
+  - temperature = 19°
+  - condition = Mostly Clear
+  - high = 24°
+  - low = 18°
+- Trocar para props reais vindas do App.
+- Não mexer na animação; só trocar a origem dos dados.
+- Dados esperados:
+  - city -> current.name ou nome montado por geocoding
+  - temperature -> current.main.temp
+  - condition -> current.weather[0].description ou main
+  - high/low -> current.main.temp_max / current.main.temp_min
+
+3. src/components/Modal/Modal.jsx
+- Receber os dados do App e repassar para:
+  - WeatherDetailsHeader
+  - ModalForecast
+  - WeatherDetails
+- Não misturar fetch dentro da animação do modal.
+- Ideal: Modal só recebe dados prontos.
+
+4. src/components/Modal/WeatherDetails/WeatherDetailsHeader.jsx
+- Hoje tem defaults estáticos:
+  - Montreal
+  - 19°
+  - Mostly Clear
+- Trocar por props reais do clima atual.
+- Deve usar a mesma cidade/temperatura/condição da Home para não quebrar a animação de morph.
+
+5. src/components/Modal/ModalForecast.jsx
+- Hoje tem arrays estáticos:
+  - hourlyData
+  - weeklyData
+- Este arquivo precisa virar o ponto de render do forecast real.
+- Hourly:
+  - se usar endpoint /forecast, mapear list[] em blocos de 3 horas
+  - usar dt/dt_txt para hora
+  - usar main.temp para temperatura
+  - usar pop para porcentagem de chuva
+  - usar weather[0].id ou weather[0].icon para a arte
+- Weekly:
+  - se usar /forecast, agrupar por dia e escolher resumo do dia
+  - se usar One Call 3.0 pago, usar daily[]
+- Observação importante:
+  - forecast.list.wind.speed vem em m/s com units=metric
+  - pop vem de 0 a 1, precisa converter para porcentagem
+
+6. src/components/Modal/WeatherDetails/WeatherDetails.jsx
+- Hoje só organiza o layout dos cards.
+- Vai precisar receber os dados reais e repassar props para cada widget.
+- A lógica de layout pode ficar como está.
+
+7. src/components/Modal/WeatherDetails/MediumWidget.jsx
+- Hoje usa mock de Air Quality:
+  - value = 3
+  - description = Low Health Risk
+  - progress = 0.18
+- Fonte recomendada:
+  - Air Pollution API -> list[0].main.aqi
+- Precisa criar mapper de AQI:
+  - 1 Good
+  - 2 Fair
+  - 3 Moderate
+  - 4 Poor
+  - 5 Very Poor
+- progress deve ser derivado do aqi.
+
+8. src/components/Modal/WeatherDetails/FeelsLikeWidget.jsx
+- Hoje usa mock:
+  - value = 19°
+  - description = Similar to the actual temperature.
+- Fonte:
+  - current.main.feels_like
+- A descrição pode continuar fixa ou virar texto calculado.
+
+9. src/components/Modal/WeatherDetails/HumidityWidget.jsx
+- Hoje usa mock:
+  - value = 90%
+  - description = The dew point is 17 right now.
+- Fonte:
+  - current.main.humidity
+- Problema:
+  - o endpoint current weather não traz dew point
+- Opções:
+  - calcular dew point a partir de temp + humidity
+  - trocar a descrição por outra frase baseada apenas em humidity
+  - usar One Call 3.0, se houver acesso
+
+10. src/components/Modal/WeatherDetails/PressureWidget.jsx
+- Hoje usa mock:
+  - value = 1013
+  - unit = hPa
+- Fonte:
+  - current.main.pressure
+- O gauge pode continuar como está; só precisa receber o valor real.
+
+11. src/components/Modal/WeatherDetails/RainfallWidget.jsx
+- Hoje usa mock:
+  - amount = 1.8
+  - period = in last hour
+  - forecast = 1.2 mm expected in next 24h.
+- Fonte sugerida:
+  - current.rain["1h"] para chuva da última hora
+  - forecast.list[*].rain["3h"] para somar próximas 24h
+- Atenção:
+  - rain pode não existir na resposta, então precisa fallback para 0
+
+12. src/components/Modal/WeatherDetails/SunriseWidget.jsx
+- Hoje usa mock:
+  - sunrise = 5:28 AM
+  - sunset = 7:25 PM
+  - progress = 0.5
+- Fonte:
+  - current.sys.sunrise
+  - current.sys.sunset
+  - current.dt
+- progress deve ser calculado a partir do horário atual entre sunrise e sunset.
+
+13. src/components/Modal/WeatherDetails/UVIndexWidget.jsx
+- Hoje usa mock:
+  - value = 4
+  - description = Moderate
+  - progress = 0.25
+- Problema:
+  - Current Weather Data não entrega UVI
+- Opções:
+  - usar One Call 3.0 se o projeto tiver essa assinatura
+  - esconder o card até existir fonte real
+  - manter como placeholder temporário, mas sinalizar que ainda não está real
+
+14. src/components/Modal/WeatherDetails/VisibilityWidget.jsx
+- Hoje usa mock:
+  - value = 8 km
+  - description = Similar to the actual temperature.
+- Fonte:
+  - current.visibility
+- Atenção:
+  - visibility vem em metros
+  - converter para km
+- A descrição atual não combina com visibility e precisa ser trocada.
+
+15. src/components/Modal/WeatherDetails/WindWidget.jsx
+- Hoje usa mock:
+  - speed = 9.7
+  - unit = km/h
+  - direction = 315
+- Fonte:
+  - current.wind.speed
+  - current.wind.deg
+- Atenção:
+  - com units=metric, OpenWeather envia wind.speed em m/s
+  - se a UI continuar em km/h, converter m/s -> km/h
+
+16. src/components/SearchAdd/SearchAdd.jsx
+- Hoje renderiza savedLocations mockadas.
+- Deve receber cidades reais do App ou de um store.
+- Se houver cidades salvas/favoritas, este arquivo só renderiza a lista.
+
+17. src/components/SearchAdd/data/searchAddData.js
+- Hoje é mock puro.
+- Deve deixar de ser a fonte de verdade.
+- Depois da integração, pode:
+  - ser removido
+  - ou virar arquivo de fallback/mock para desenvolvimento
+
+18. src/components/SearchAdd/TopNavigation.jsx
+- Hoje o input só atualiza estado local.
+- Este arquivo precisa ganhar a lógica de busca:
+  - debounce do texto
+  - chamada para Geocoding API
+  - lista de resultados
+  - callback para selecionar cidade
+- Ao selecionar cidade:
+  - salvar lat/lon
+  - disparar fetch do clima atual e forecast
+
+19. src/components/SearchAdd/WeatherWidget.jsx
+- Hoje tem defaults mockados.
+- Deve renderizar somente props reais.
+- O ícone grande deve vir do mapper de arte local.
+
+Arquivos e pastas de ícones/arte que entram na integração
+
+20. public/widgets/big
+21. public/widgets/small
+- Estes assets são a arte custom do app.
+- Não precisam ser alterados agora, mas precisam ser mapeados.
+- Criar um mapper central em src/lib/weatherArtMap.js.
+
+Problema importante de ícones/arte
+- O set atual de imagens locais não cobre todas as condições da OpenWeather.
+- Exemplos de condições sem arte óbvia:
+  - clear sky
+  - snow
+  - mist/fog
+  - thunderstorm específico
+- Então a outra pessoa vai precisar decidir entre:
+  - mapear várias condições para a arte mais próxima
+  - adicionar novos assets em public/widgets
+  - usar os ícones oficiais da OpenWeather como fallback
+
+Mapeamento sugerido para as artes locais
+- Basear no campo weather[0].icon ou weather[0].id.
+- Exemplo inicial:
+  - 09d / 09n / 10d / 10n -> rain assets
+  - 02d / 03d / 04d -> sun-cloud assets
+  - 02n / 03n / 04n -> moon-cloud assets
+  - extremo/tornado -> tornado asset
+- Fallback recomendado:
+  - usar o ícone oficial da OpenWeather se não houver arte local equivalente
+
+Sequência recomendada de implementação
+1. Criar serviço OpenWeather + .env
+2. Fazer fetch em App.jsx para uma cidade fixa por lat/lon
+3. Passar current weather real para WeatherInfo + WeatherDetailsHeader
+4. Passar dados reais para os widgets pequenos
+5. Trocar ModalForecast para forecast real
+6. Criar weatherArtMap.js para pequenos/grandes ícones
+7. Integrar SearchAdd com Geocoding API
+8. Trocar lista mock de cidades salvas por dados reais
+9. Resolver os pontos bloqueados por plano da API:
+   - UV Index
+   - weekly forecast completo
+   - dew point, se necessário
+
+Observações finais para quem for implementar
+- OpenWeather recomenda usar coordenadas para chamadas de clima; nome de cidade deve virar lat/lon via Geocoding API.
+- built-in geocoding nos endpoints de clima está marcado como deprecated na documentação atual.
+- Quando um campo não existir na resposta, o app precisa ter fallback:
+  - rain
+  - snow
+  - gust
+  - visibility
+  - air pollution
+- Ideal manter formatação centralizada:
+  - temperatura
+  - hora local da cidade
+  - km/h
+  - mm de chuva
+  - % de chuva
+
+Links oficiais usados nesta análise
+- API overview: https://openweathermap.org/api
+- Current weather: https://openweathermap.org/current
+- 5 day / 3 hour forecast: https://openweathermap.org/forecast5
+- Geocoding API: https://openweathermap.org/api/geocoding-api
+- Weather conditions and icons: https://openweathermap.org/weather-conditions
+- Air Pollution API: https://api.openweathermap.org/data/2.5/air_pollution
+- One Call 3.0: https://openweathermap.org/api/one-call-3
+
