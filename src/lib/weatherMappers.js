@@ -160,12 +160,10 @@ export const buildHeaderSnapshot = ({ current, location }) => {
   };
 };
 
-export const deriveDayHighLow = ({ forecastList = [], timezoneOffset }) => {
+export const deriveDayHighLow = ({ forecastList = [], timezoneOffset, baseTimestamp }) => {
   if (!forecastList.length) return { high: null, low: null };
-  const todayKey = getLocalDateKey(
-    Math.floor(Date.now() / 1000),
-    timezoneOffset
-  );
+  const baseTs = isValidNumber(baseTimestamp) ? baseTimestamp : Math.floor(Date.now() / 1000);
+  const todayKey = getLocalDateKey(baseTs, timezoneOffset);
   const todayItems = forecastList.filter(
     (item) => getLocalDateKey(item.dt, timezoneOffset) === todayKey
   );
@@ -264,7 +262,7 @@ export const buildWidgets = ({ current, forecast, airQuality }) => {
   const hourly = forecast?.list ?? [];
   const timezoneOffset = forecast?.city?.timezone ?? current?.timezone ?? 0;
 
-  const aqiValue = airQuality?.list?.[0]?.main?.aqi;
+  const aqiValue = airQuality?.list?.[0]?.main?.aqi ?? airQuality?.list?.[0]?.aqi;
   const aqi = formatAqi(aqiValue);
 
   const dewPoint = computeDewPoint(current?.main?.temp, current?.main?.humidity);

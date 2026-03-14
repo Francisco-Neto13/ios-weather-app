@@ -208,9 +208,10 @@ function App() {
     const dayRange = deriveDayHighLow({
       forecastList: forecast?.list ?? [],
       timezoneOffset,
+      baseTimestamp: current?.dt,
     });
-    const high = dayRange.high ?? currentSnapshot.high;
-    const low = dayRange.low ?? currentSnapshot.low;
+    const high = dayRange.high ?? current?.main?.temp ?? null;
+    const low = dayRange.low ?? current?.main?.temp ?? null;
     return {
       current: {
         ...currentSnapshot,
