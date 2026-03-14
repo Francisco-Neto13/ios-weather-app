@@ -1,46 +1,36 @@
 import React from 'react';
+import {
+  weatherDetailIcons,
+  widgetHeaderIconStyle,
+  widgetHeaderIconWrapStyle,
+  widgetHeaderLabelStyle,
+  widgetHeaderRowStyle,
+} from './styles/widgetHeaderStyles';
+import { secondaryWidgetTextStyle, smallWidgetCardStyle } from './styles/widgetLayoutStyles';
 
 const VisibilityWidget = ({
-  icon = '/widgets/visibility.png',
+  icon = weatherDetailIcons.visibility,
   value = '8 km',
   description = 'Similar to the actual temperature.',
 }) => {
   return (
-    <div
-      style={{
-        boxSizing: 'border-box',
-        width: '164px',
-        height: '164px',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        borderRadius: '22px',
-        background: '#1f1a32',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        fontFamily: "'SF Pro Display', -apple-system, sans-serif",
-        flexShrink: 0,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+    <div style={smallWidgetCardStyle}>
+      <div style={widgetHeaderRowStyle}>
         {icon && (
-          <img src={icon} alt="Visibility" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+          <div style={widgetHeaderIconWrapStyle}>
+            <img src={icon} alt="Visibility" style={widgetHeaderIconStyle} />
+          </div>
         )}
-        <span style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.5px', color: 'rgba(235, 235, 245, 0.6)', textTransform: 'uppercase' }}>
-          Visibility
-        </span>
+        <span style={widgetHeaderLabelStyle}>Visibility</span>
       </div>
 
       <p style={{ margin: 0, fontSize: '34px', fontWeight: 400, color: '#FFFFFF', lineHeight: 1 }}>
         {value}
       </p>
 
-      <p style={{ margin: 0, fontSize: '13px', color: 'rgba(235, 235, 245, 0.6)', lineHeight: 1.4 }}>
-        {description}
-      </p>
+      <p style={secondaryWidgetTextStyle}>{description}</p>
     </div>
   );
 };
 
 export default VisibilityWidget;
-

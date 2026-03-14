@@ -4,9 +4,9 @@ const DEFAULT_BIG_ICON = '/widgets/big/moon-cloud-mid-rain.png';
 
 const WeatherWidget = ({
   city = 'Montreal, Canada',
-  temperature = '19°',
+  temperature = '19\u00B0',
   condition = 'Mid Rain',
-  highLow = 'H:24°  L:18°',
+  highLow = 'H:24\u00B0  L:18\u00B0',
   icon = DEFAULT_BIG_ICON,
 }) => {
   const [isPressed, setIsPressed] = useState(false);

@@ -5,6 +5,7 @@ import WeatherInfo from "./components/WeatherInfo/WeatherInfo";
 import TabBar from "./components/Navigation/TabBar";
 import Modal from "./components/Modal/Modal";
 import SearchAdd from "./components/SearchAdd/SearchAdd";
+import StatusBar from "./components/StatusBar/StatusBar";
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
@@ -25,8 +26,9 @@ function App() {
 
   return (
     <AppLayout>
+      <StatusBar />
       <House />
-      <WeatherInfo />
+      <WeatherInfo sheetProgress={sheetProgress} />
       <Modal onSheetProgress={setSheetProgress} />
 
       <div

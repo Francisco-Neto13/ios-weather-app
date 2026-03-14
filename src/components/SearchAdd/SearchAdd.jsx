@@ -1,25 +1,9 @@
 import React from 'react';
+import StatusBar from '../StatusBar/StatusBar';
 import SearchAddEllipses from './SearchAddEllipses';
+import { savedLocations } from './data/searchAddData';
 import TopNavigation from './TopNavigation';
 import WeatherWidget from './WeatherWidget';
-
-const searchAddWidgetIcons = {
-  moonCloudFastWind: '/widgets/big/moon-cloud-fast-wind.png',
-  moonCloudMidRain: '/widgets/big/moon-cloud-mid-rain.png',
-  sunCloudAngledRain: '/widgets/big/sun-cloud-angled-rain.png',
-  sunCloudMidRain: '/widgets/big/sun-cloud-mid-rain.png',
-  tornado: '/widgets/big/tornado.png',
-};
-
-const savedLocations = [
-  {
-    city: 'Montreal, Canada',
-    temperature: '19°',
-    condition: 'Mid Rain',
-    highLow: 'H:24°  L:18°',
-    icon: searchAddWidgetIcons.moonCloudMidRain,
-  },
-];
 
 const SearchAdd = ({ onClose }) => {
   return (
@@ -37,6 +21,7 @@ const SearchAdd = ({ onClose }) => {
       }}
     >
       <SearchAddEllipses />
+      <StatusBar />
       <TopNavigation onClose={onClose} />
 
       <div

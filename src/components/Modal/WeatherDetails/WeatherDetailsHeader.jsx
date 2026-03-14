@@ -4,6 +4,7 @@ const WeatherDetailsHeader = ({
   city = 'Montreal',
   temperature = '19\u00B0',
   condition = 'Mostly Clear',
+  contentOpacity = 1,
 }) => {
   return (
     <div
@@ -28,6 +29,7 @@ const WeatherDetailsHeader = ({
           letterSpacing: '0.374px',
           color: '#FFFFFF',
           whiteSpace: 'nowrap',
+          opacity: contentOpacity,
         }}
       >
         {city}
@@ -48,6 +50,7 @@ const WeatherDetailsHeader = ({
           letterSpacing: '0.38px',
           color: 'rgba(235, 235, 245, 0.6)',
           whiteSpace: 'nowrap',
+          opacity: contentOpacity,
         }}
       >
         {temperature}
@@ -68,6 +71,7 @@ const WeatherDetailsHeader = ({
           letterSpacing: '0.38px',
           color: 'rgba(235, 235, 245, 0.6)',
           whiteSpace: 'nowrap',
+          opacity: contentOpacity,
         }}
       >
         {condition}

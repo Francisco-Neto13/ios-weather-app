@@ -138,6 +138,7 @@ const Modal = ({ onSheetProgress }) => {
   const headerBackdropTop = forecastTop - headerBackdropHeight;
   const headerTop = headerTrackTop + HEADER_TOP;
   const handleTop = mainPanelTop + 3;
+  const headerContentOpacity = clamp((headerOpacity - 0.55) / 0.45, 0, 1);
 
   return (
     <>
@@ -245,7 +246,7 @@ const Modal = ({ onSheetProgress }) => {
           pointerEvents: 'none',
         }}
       >
-        <WeatherDetailsHeader />
+        <WeatherDetailsHeader contentOpacity={headerContentOpacity} />
       </div>
 
       {showFloatingForecast && (
