@@ -5,7 +5,7 @@ const AppLayout = ({ children }) => {
     <div className="bg-[#A499C0] w-screen min-h-screen flex items-center justify-center p-4">
       <div
         className="relative w-[390px] h-[844px] rounded-[55px] shadow-[0_40px_80px_rgba(0,0,0,0.4)]"
-        style={{ overflow: "clip" }}
+        style={{ overflow: "hidden", isolation: "isolate" }}
       >
         <img
           src="../../../public/images/background.png"
@@ -13,7 +13,12 @@ const AppLayout = ({ children }) => {
           className="absolute inset-0 w-full h-full object-cover z-0"
         />
         <BottomGradient />
-        <div className="relative z-20 w-full h-full">{children}</div>
+        <div
+          className="relative z-20 w-full h-full"
+          style={{ borderRadius: "55px", overflow: "hidden" }}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );
