@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useRef } from 'react';
+﻿import React, { useEffect, useMemo, useRef } from 'react';
 
 const weatherWidgetIcons = {
   moonCloudRain: '/widgets/small/moon-cloud-rain.png',
@@ -95,7 +95,7 @@ const ForecastCard = ({ hour, icon, degree, precipitation, isActive = false }) =
   );
 };
 
-const ModalForecast = ({ activeTab = 'hourly' }) => {
+const ModalForecast = ({ activeTab = 'hourly', hourlyData = [], weeklyData = [] }) => {
   const hourlyScrollRef = useRef(null);
   const weeklyScrollRef = useRef(null);
   const dragStateRef = useRef({
@@ -105,7 +105,7 @@ const ModalForecast = ({ activeTab = 'hourly' }) => {
     scroller: null,
   });
 
-  const hourlyData = [
+  const fallbackHourlyData = [
     { hour: '12 AM', icon: weatherWidgetIcons.moonCloudRain, degree: '19°', precipitation: '30%', isActive: false },
     { hour: 'Now', icon: weatherWidgetIcons.moonCloudWind, degree: '19°', precipitation: null, isActive: true },
     { hour: '2 AM', icon: weatherWidgetIcons.moonCloudWind, degree: '18°', precipitation: null, isActive: false },
@@ -116,7 +116,7 @@ const ModalForecast = ({ activeTab = 'hourly' }) => {
     { hour: '7 AM', icon: weatherWidgetIcons.sunCloudRain, degree: '19°', precipitation: null, isActive: false },
   ];
 
-  const weeklyData = [
+  const fallbackWeeklyData = [
     { hour: 'Mon', icon: weatherWidgetIcons.sunCloudAngledRain, degree: '21°', precipitation: '30%', isActive: false },
     { hour: 'Tue', icon: weatherWidgetIcons.sunCloudRain, degree: '19°', precipitation: null, isActive: true },
     { hour: 'Wed', icon: weatherWidgetIcons.moonCloudRain, degree: '18°', precipitation: '25%', isActive: false },
@@ -125,6 +125,15 @@ const ModalForecast = ({ activeTab = 'hourly' }) => {
     { hour: 'Sat', icon: weatherWidgetIcons.moonCloudWind, degree: '17°', precipitation: null, isActive: false },
     { hour: 'Sun', icon: weatherWidgetIcons.sunCloudAngledRain, degree: '23°', precipitation: null, isActive: false },
   ];
+
+  const resolvedHourlyData = useMemo(
+    () => (hourlyData.length ? hourlyData : fallbackHourlyData),
+    [hourlyData]
+  );
+  const resolvedWeeklyData = useMemo(
+    () => (weeklyData.length ? weeklyData : fallbackWeeklyData),
+    [weeklyData]
+  );
 
   const endMouseDrag = () => {
     dragStateRef.current.isDragging = false;
@@ -220,7 +229,7 @@ const ModalForecast = ({ activeTab = 'hourly' }) => {
               paddingRight: '20px',
             }}
           >
-            {hourlyData.map((item, i) => (
+            {resolvedHourlyData.map((item, i) => (
               <ForecastCard key={`hourly-${i}`} {...item} />
             ))}
           </div>
@@ -243,7 +252,7 @@ const ModalForecast = ({ activeTab = 'hourly' }) => {
               paddingRight: '20px',
             }}
           >
-            {weeklyData.map((item, i) => (
+            {resolvedWeeklyData.map((item, i) => (
               <ForecastCard key={`weekly-${i}`} {...item} />
             ))}
           </div>
@@ -254,3 +263,6 @@ const ModalForecast = ({ activeTab = 'hourly' }) => {
 };
 
 export default ModalForecast;
+
+
+

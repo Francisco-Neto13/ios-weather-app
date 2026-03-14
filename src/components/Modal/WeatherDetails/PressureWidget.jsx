@@ -15,7 +15,10 @@ const PressureWidget = ({
   min = 950,
   max = 1050,
 }) => {
-  const progress = (value - min) / (max - min);
+  const safeValue = Number.isFinite(value) ? value : null;
+  const gaugeValue = safeValue ?? (min + max) / 2;
+  const progress = (gaugeValue - min) / (max - min);
+  const displayValue = safeValue == null ? '--' : Math.round(safeValue);
   const startAngle = -220;
   const endAngle = 40;
   const angle = startAngle + progress * (endAngle - startAngle);
@@ -80,7 +83,7 @@ const PressureWidget = ({
           />
           <circle cx="60" cy="60" r="3" fill="white" />
           <text x="60" y="57" textAnchor="middle" fontSize="18" fill="white" fontWeight="700">
-            {value}
+            {displayValue}
           </text>
           <text x="60" y="72" textAnchor="middle" fontSize="11" fill="rgba(235,235,245,0.5)">
             {unit}

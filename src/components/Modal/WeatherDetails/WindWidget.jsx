@@ -14,27 +14,29 @@ const WindWidget = ({
   unit = 'km/h',
   direction = 315,
 }) => {
+  const displaySpeed = speed ?? '--';
+  const directionValue = Number.isFinite(direction) ? direction : 0;
   const rad = (deg) => (deg * Math.PI) / 180;
   const cx = 60;
   const cy = 60;
   const r = 44;
   const tipN = {
-    x: cx + r * Math.sin(rad(direction)),
-    y: cy - r * Math.cos(rad(direction)),
+    x: cx + r * Math.sin(rad(directionValue)),
+    y: cy - r * Math.cos(rad(directionValue)),
   };
   const tipS = {
-    x: cx - r * 0.6 * Math.sin(rad(direction)),
-    y: cy + r * 0.6 * Math.cos(rad(direction)),
+    x: cx - r * 0.6 * Math.sin(rad(directionValue)),
+    y: cy + r * 0.6 * Math.cos(rad(directionValue)),
   };
   const sideN = 8;
   const sideS = 6;
   const perpN = {
-    x: cx + sideN * Math.cos(rad(direction)),
-    y: cy + sideN * Math.sin(rad(direction)),
+    x: cx + sideN * Math.cos(rad(directionValue)),
+    y: cy + sideN * Math.sin(rad(directionValue)),
   };
   const perpS = {
-    x: cx - sideS * Math.cos(rad(direction)),
-    y: cy - sideS * Math.sin(rad(direction)),
+    x: cx - sideS * Math.cos(rad(directionValue)),
+    y: cy - sideS * Math.sin(rad(directionValue)),
   };
 
   return (
@@ -75,7 +77,7 @@ const WindWidget = ({
             points={`${tipS.x},${tipS.y} ${perpN.x},${perpN.y} ${cx},${cy} ${perpS.x},${perpS.y}`}
             fill="rgba(255,255,255,0.12)"
           />
-          <text x="60" y="56" textAnchor="middle" fontSize="22" fill="white" fontWeight="700">{speed}</text>
+          <text x="60" y="56" textAnchor="middle" fontSize="22" fill="white" fontWeight="700">{displaySpeed}</text>
           <text x="60" y="70" textAnchor="middle" fontSize="11" fill="rgba(235,235,245,0.5)">{unit}</text>
         </svg>
       </div>

@@ -15,6 +15,10 @@ const MediumWidget = ({
   description = 'Low Health Risk',
   progress = 0.18,
 }) => {
+  const displayValue = value ?? '--';
+  const displayDescription = description || 'Unavailable';
+  const displayProgress = Number.isFinite(progress) ? progress : 0;
+
   return (
     <div style={mediumWidgetCardStyle}>
       <div style={widgetHeaderRowStyle}>
@@ -36,7 +40,7 @@ const MediumWidget = ({
             letterSpacing: '-0.3px',
           }}
         >
-          {value} - {description}
+          {displayValue} - {displayDescription}
         </p>
         <div
           style={{
@@ -60,7 +64,7 @@ const MediumWidget = ({
           <div
             style={{
               position: 'absolute',
-              left: `${progress * 100}%`,
+              left: `${displayProgress * 100}%`,
               top: '50%',
               transform: 'translate(-50%, -50%)',
               width: '10px',

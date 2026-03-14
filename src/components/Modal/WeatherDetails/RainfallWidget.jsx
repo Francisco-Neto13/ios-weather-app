@@ -15,6 +15,9 @@ const RainfallWidget = ({
   period = 'in last hour',
   forecast = '1.2 mm expected in next 24h.',
 }) => {
+  const displayAmount = amount ?? '--';
+  const displayForecast = forecast || 'Rain forecast unavailable.';
+
   return (
     <div style={smallWidgetCardStyle}>
       <div style={widgetHeaderRowStyle}>
@@ -28,14 +31,14 @@ const RainfallWidget = ({
 
       <div>
         <p style={{ margin: 0, fontSize: '30px', fontWeight: 400, color: '#FFFFFF', lineHeight: 1.1 }}>
-          {amount} {unit}
+          {displayAmount} {unit}
         </p>
         <p style={{ margin: '4px 0 0', fontSize: '16px', fontWeight: 600, color: '#FFFFFF' }}>
           {period}
         </p>
       </div>
 
-      <p style={secondaryWidgetTextStyle}>{forecast}</p>
+      <p style={secondaryWidgetTextStyle}>{displayForecast}</p>
     </div>
   );
 };

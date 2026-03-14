@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 const SignalIcon = () => (
   <svg width="19" height="12" viewBox="0 0 19 12" fill="none" aria-hidden="true">
@@ -39,7 +39,26 @@ const BatteryIcon = () => (
   </svg>
 );
 
-const StatusBar = ({ time = '9:41' }) => {
+const formatDeviceTime = (date = new Date()) => {
+  let hours = date.getHours() % 12;
+  if (hours === 0) hours = 12;
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
+const StatusBar = ({ time }) => {
+  const [deviceTime, setDeviceTime] = useState(formatDeviceTime());
+
+  useEffect(() => {
+    if (time) return undefined;
+    const tick = () => setDeviceTime(formatDeviceTime());
+    tick();
+    const interval = setInterval(tick, 30 * 1000);
+    return () => clearInterval(interval);
+  }, [time]);
+
+  const displayTime = time ?? deviceTime;
+
   return (
     <div
       style={{
@@ -91,7 +110,7 @@ const StatusBar = ({ time = '9:41' }) => {
             color: '#FFFFFF',
           }}
         >
-          {time}
+          {displayTime}
         </span>
       </div>
 

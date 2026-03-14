@@ -8,12 +8,16 @@ const WeatherWidget = ({
   condition = 'Mid Rain',
   highLow = 'H:24\u00B0  L:18\u00B0',
   icon = DEFAULT_BIG_ICON,
+  onSelect,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
+  const isInteractive = typeof onSelect === 'function';
 
   return (
     <button
       type="button"
+      aria-label={`Select ${city}`}
+      disabled={!isInteractive}
       style={{
         position: 'relative',
         width: '342px',
@@ -25,16 +29,17 @@ const WeatherWidget = ({
         borderRadius: '22px',
         overflow: 'hidden',
         boxSizing: 'border-box',
-        cursor: 'pointer',
+        cursor: isInteractive ? 'pointer' : 'default',
         textAlign: 'left',
-        transform: isPressed ? 'scale(0.985)' : 'scale(1)',
-        filter: isPressed ? 'brightness(1.04)' : 'brightness(1)',
+        transform: isPressed && isInteractive ? 'scale(0.985)' : 'scale(1)',
+        filter: isPressed && isInteractive ? 'brightness(1.04)' : 'brightness(1)',
         transition: 'transform 0.16s ease, filter 0.16s ease',
       }}
       onPointerDown={() => setIsPressed(true)}
       onPointerUp={() => setIsPressed(false)}
       onPointerLeave={() => setIsPressed(false)}
       onPointerCancel={() => setIsPressed(false)}
+      onClick={onSelect}
     >
       <svg
         width="342"

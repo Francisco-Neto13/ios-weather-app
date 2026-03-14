@@ -1,7 +1,19 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-const TopNavigation = ({ onClose }) => {
-  const [query, setQuery] = useState('');
+const TopNavigation = ({ onClose, query = '', onQueryChange, isSearching = false }) => {
+  const [draftQuery, setDraftQuery] = useState(query);
+
+  useEffect(() => {
+    setDraftQuery(query);
+  }, [query]);
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      onQueryChange?.(draftQuery);
+    }, 350);
+
+    return () => clearTimeout(handle);
+  }, [draftQuery, onQueryChange]);
 
   return (
     <div
@@ -137,8 +149,8 @@ const TopNavigation = ({ onClose }) => {
 
         <input
           type="text"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
+          value={draftQuery}
+          onChange={(event) => setDraftQuery(event.target.value)}
           placeholder="Search for a city or airport"
           style={{
             flex: 1,
@@ -154,6 +166,20 @@ const TopNavigation = ({ onClose }) => {
           }}
         />
       </div>
+
+      {isSearching && (
+        <div
+          style={{
+            marginLeft: '16px',
+            marginTop: '8px',
+            fontFamily: "'SF Pro Text', -apple-system, sans-serif",
+            fontSize: '13px',
+            color: 'rgba(235, 235, 245, 0.6)',
+          }}
+        >
+          Searching...
+        </div>
+      )}
     </div>
   );
 };

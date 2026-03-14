@@ -14,8 +14,11 @@ const SunriseWidget = ({
   sunset = '7:25 PM',
   progress = 0.5,
 }) => {
-  const dotX = progress * 132;
-  const dotY = 38 - Math.sin(progress * Math.PI) * 52;
+  const displaySunrise = sunrise || '--';
+  const displaySunset = sunset || '--';
+  const displayProgress = Number.isFinite(progress) ? progress : 0;
+  const dotX = displayProgress * 132;
+  const dotY = 38 - Math.sin(displayProgress * Math.PI) * 52;
 
   return (
     <div style={{ ...smallWidgetCardStyle, overflow: 'hidden' }}>
@@ -29,7 +32,7 @@ const SunriseWidget = ({
       </div>
 
       <p style={{ margin: 0, fontSize: '34px', fontWeight: 400, color: '#FFFFFF', lineHeight: 1 }}>
-        {sunrise}
+        {displaySunrise}
       </p>
 
       <div style={{ position: 'relative', height: '40px' }}>
@@ -37,7 +40,7 @@ const SunriseWidget = ({
           <circle cx={dotX} cy={dotY} r="4" fill="#FFFFFF" opacity="0.9" />
         </svg>
         <span style={{ ...secondaryWidgetTextStyle, position: 'absolute', bottom: 0, left: 0 }}>
-          Sunset: {sunset}
+          Sunset: {displaySunset}
         </span>
       </div>
     </div>

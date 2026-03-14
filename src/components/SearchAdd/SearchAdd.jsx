@@ -1,11 +1,26 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import StatusBar from '../StatusBar/StatusBar';
 import SearchAddEllipses from './SearchAddEllipses';
-import { savedLocations } from './data/searchAddData';
 import TopNavigation from './TopNavigation';
 import WeatherWidget from './WeatherWidget';
 
-const SearchAdd = ({ onClose }) => {
+const SearchAdd = ({
+  onClose,
+  query = '',
+  onQueryChange,
+  searchResults = [],
+  savedLocations = [],
+  onSelectLocation,
+  isSearching = false,
+  statusTime,
+}) => {
+  const trimmedQuery = query.trim();
+  const list = useMemo(
+    () => (trimmedQuery ? searchResults : savedLocations),
+    [trimmedQuery, searchResults, savedLocations]
+  );
+  const showEmptyState = trimmedQuery && !isSearching && list.length === 0;
+
   return (
     <div
       style={{
@@ -21,8 +36,13 @@ const SearchAdd = ({ onClose }) => {
       }}
     >
       <SearchAddEllipses />
-      <StatusBar />
-      <TopNavigation onClose={onClose} />
+      <StatusBar time={statusTime} />
+      <TopNavigation
+        onClose={onClose}
+        query={query}
+        onQueryChange={onQueryChange}
+        isSearching={isSearching}
+      />
 
       <div
         className="ios-scroll-hidden"
@@ -39,8 +59,17 @@ const SearchAdd = ({ onClose }) => {
           zIndex: 1,
         }}
       >
-        {savedLocations.map((location) => (
-          <WeatherWidget key={location.city} {...location} />
+        {showEmptyState && (
+          <div style={{ color: 'rgba(235, 235, 245, 0.7)', fontSize: '15px' }}>
+            No results found.
+          </div>
+        )}
+        {list.map((location) => (
+          <WeatherWidget
+            key={location.key ?? location.city}
+            {...location}
+            onSelect={() => onSelectLocation?.(location.location ?? location)}
+          />
         ))}
       </div>
     </div>

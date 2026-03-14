@@ -18,7 +18,7 @@ const DETAILS_CONTENT_TOP_WITHOUT_FORECAST = 376;
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
-const Modal = ({ onSheetProgress }) => {
+const Modal = ({ onSheetProgress, header, forecast, widgets }) => {
   const [activeTab, setActiveTab] = useState('hourly');
   const [openProgress, setOpenProgress] = useState(0);
   const [isDraggingHandle, setIsDraggingHandle] = useState(false);
@@ -194,8 +194,15 @@ const Modal = ({ onSheetProgress }) => {
             <ModalSegmentedControl activeTab={activeTab} onTabChange={setActiveTab} />
           ) : null}
           forecast={embedForecastInDetails ? (
-            <ModalForecast activeTab={activeTab} onTabChange={setActiveTab} />
+            <ModalForecast
+              activeTab={activeTab}
+              onTabChange={setActiveTab}
+              hourlyData={forecast?.hourly ?? []}
+              weeklyData={forecast?.weekly ?? []}
+            />
           ) : null}
+          header={header}
+          widgets={widgets}
         />
       </div>
 
@@ -246,7 +253,7 @@ const Modal = ({ onSheetProgress }) => {
           pointerEvents: 'none',
         }}
       >
-        <WeatherDetailsHeader contentOpacity={headerContentOpacity} />
+        <WeatherDetailsHeader contentOpacity={headerContentOpacity} {...header} />
       </div>
 
       {showFloatingForecast && (
@@ -262,7 +269,12 @@ const Modal = ({ onSheetProgress }) => {
           }}
         >
           <ModalSegmentedControl activeTab={activeTab} onTabChange={setActiveTab} />
-          <ModalForecast activeTab={activeTab} onTabChange={setActiveTab} />
+          <ModalForecast
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            hourlyData={forecast?.hourly ?? []}
+            weeklyData={forecast?.weekly ?? []}
+          />
         </div>
       )}
 

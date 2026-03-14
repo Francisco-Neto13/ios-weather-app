@@ -51,10 +51,7 @@ Decisões que a outra pessoa vai precisar tomar
   - aceitar que o "Weekly Forecast" terá, no máximo, 5 dias ou será agregado manualmente
   - UV Index vai precisar ficar oculto, com fallback, ou vir de outra fonte
   - dew point do card de humidity vai precisar ser calculado manualmente ou removido
-- Se o projeto vai usar One Call 3.0 pago:
-  - fica mais fácil preencher UVI
-  - fica mais fácil preencher hourly real
-  - fica mais fácil preencher daily de até 8 dias
+
 
 Arquivos que precisam ser alterados
 

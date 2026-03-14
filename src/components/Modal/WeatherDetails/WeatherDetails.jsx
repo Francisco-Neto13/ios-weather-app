@@ -17,6 +17,8 @@ const WeatherDetails = ({
   contentTopInset = 16,
   segmentedControl = null,
   forecast = null,
+  header = null,
+  widgets = {},
 }) => {
   const hasForecastSection = Boolean(segmentedControl || forecast);
   const forecastTop = 142;
@@ -84,7 +86,7 @@ const WeatherDetails = ({
               width: '390px',
             }}
           >
-            <WeatherDetailsHeader />
+            <WeatherDetailsHeader {...header} />
           </div>
         )}
 
@@ -115,26 +117,26 @@ const WeatherDetails = ({
             paddingBottom: '40px',
           }}
         >
-          <MediumWidget />
+          <MediumWidget {...(widgets?.airQuality ?? {})} />
 
           <div style={widgetGridRowStyle}>
-            <UVIndexWidget />
-            <SunriseWidget />
+            <UVIndexWidget {...(widgets?.uvIndex ?? {})} />
+            <SunriseWidget {...(widgets?.sunrise ?? {})} />
           </div>
 
           <div style={widgetGridRowStyle}>
-            <WindWidget />
-            <RainfallWidget />
+            <WindWidget {...(widgets?.wind ?? {})} />
+            <RainfallWidget {...(widgets?.rainfall ?? {})} />
           </div>
 
           <div style={widgetGridRowStyle}>
-            <FeelsLikeWidget />
-            <HumidityWidget />
+            <FeelsLikeWidget {...(widgets?.feelsLike ?? {})} />
+            <HumidityWidget {...(widgets?.humidity ?? {})} />
           </div>
 
           <div style={widgetGridRowStyle}>
-            <VisibilityWidget />
-            <PressureWidget />
+            <VisibilityWidget {...(widgets?.visibility ?? {})} />
+            <PressureWidget {...(widgets?.pressure ?? {})} />
           </div>
         </div>
       </div>
@@ -143,4 +145,3 @@ const WeatherDetails = ({
 };
 
 export default WeatherDetails;
-

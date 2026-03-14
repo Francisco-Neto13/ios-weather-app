@@ -3,10 +3,10 @@ const lerp = (start, end, progress) => start + (end - start) * progress;
 
 const WeatherInfo = ({
   city = "Montreal",
-  temperature = "19°",
+  temperature = "19\u00B0",
   condition = "Mostly Clear",
-  high = "24°",
-  low = "18°",
+  high = "24\u00B0",
+  low = "18\u00B0",
   sheetProgress = 0,
 }) => {
   const morphProgress = clamp((sheetProgress - 0.08) / 0.76, 0, 1);
@@ -124,3 +124,4 @@ const WeatherInfo = ({
 };
 
 export default WeatherInfo;
+
