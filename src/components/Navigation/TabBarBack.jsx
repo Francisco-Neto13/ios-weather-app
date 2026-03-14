@@ -1,6 +1,6 @@
 import React from "react";
 
-const TabBarBack = ({ onOpenSearch }) => {
+const TabBarBack = ({ onOpenSearch, onUseCurrentLocation }) => {
   return (
     <div
       className="absolute"
@@ -42,7 +42,14 @@ const TabBarBack = ({ onOpenSearch }) => {
       >
         <div
           className="absolute flex items-center justify-center"
-          style={{ left: "0px", top: "0px", width: "44px", height: "44px" }}
+          style={{
+            left: "0px",
+            top: "0px",
+            width: "44px",
+            height: "44px",
+            cursor: "pointer",
+          }}
+          onClick={onUseCurrentLocation}
         >
           <svg
             width="20"

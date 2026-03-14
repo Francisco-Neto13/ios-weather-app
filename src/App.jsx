@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import AppLayout from "./components/Background/AppLayout";
 import House from "./components/House/House";
 import WeatherInfo from "./components/WeatherInfo/WeatherInfo";
@@ -6,7 +6,13 @@ import TabBar from "./components/Navigation/TabBar";
 import Modal from "./components/Modal/Modal";
 import SearchAdd from "./components/SearchAdd/SearchAdd";
 import StatusBar from "./components/StatusBar/StatusBar";
-import { fetchAirQuality, fetchCurrentWeather, fetchForecast5Day, fetchGeocoding } from "./services/openWeather";
+import {
+  fetchAirQuality,
+  fetchCurrentWeather,
+  fetchForecast5Day,
+  fetchGeocoding,
+  fetchReverseGeocoding,
+} from "./services/openWeather";
 import {
   buildCurrentSnapshot,
   deriveDayHighLow,
@@ -53,11 +59,27 @@ const formatCityTime = (timestamp, timezoneOffset) => {
   if (!Number.isFinite(timestamp)) return null;
   const offset = Number.isFinite(timezoneOffset) ? timezoneOffset : 0;
   const date = new Date((timestamp + offset) * 1000);
-  let hours = date.getUTCHours() % 12;
+  const rawHours = date.getUTCHours();
+  let hours = rawHours % 12;
   if (hours === 0) hours = 12;
   const minutes = String(date.getUTCMinutes()).padStart(2, "0");
-  return `${hours}:${minutes}`;
+  const period = rawHours >= 12 ? "PM" : "AM";
+  return `${hours}:${minutes} ${period}`;
 };
+
+const getCurrentDevicePosition = () =>
+  new Promise((resolve, reject) => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      reject(new Error("Geolocation is not supported in this browser."));
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(resolve, reject, {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 5 * 60 * 1000,
+    });
+  });
 
 function App() {
   const [sheetProgress, setSheetProgress] = useState(0);
@@ -65,6 +87,7 @@ function App() {
   const [selectedLocation, setSelectedLocation] = useState(DEFAULT_LOCATION);
   const [savedLocations, setSavedLocations] = useState([DEFAULT_LOCATION]);
   const [locationCache, setLocationCache] = useState({});
+  const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [searchStatus, setSearchStatus] = useState("idle");
@@ -77,6 +100,7 @@ function App() {
   });
   const { current, forecast, airQuality, status } = weatherState;
   const searchRequestRef = useRef(0);
+  const searchPreviewRequestRef = useRef(0);
 
   useEffect(() => {
     const storedLocations = readStorage(STORAGE_KEYS.locations, null);
@@ -88,15 +112,19 @@ function App() {
     if (storedCache && typeof storedCache === "object") {
       setLocationCache(storedCache);
     }
+
+    setHasHydratedStorage(true);
   }, []);
 
   useEffect(() => {
+    if (!hasHydratedStorage) return;
     writeStorage(STORAGE_KEYS.locations, savedLocations);
-  }, [savedLocations]);
+  }, [hasHydratedStorage, savedLocations]);
 
   useEffect(() => {
+    if (!hasHydratedStorage) return;
     writeStorage(STORAGE_KEYS.cache, locationCache);
-  }, [locationCache]);
+  }, [hasHydratedStorage, locationCache]);
 
   const tabBarStyle = useMemo(() => {
     const hiddenProgress = clamp((sheetProgress - 0.12) / 0.52, 0, 1);
@@ -157,7 +185,55 @@ function App() {
     setLocationCache((prev) => ({ ...prev, [key]: snapshot }));
   }, [status, current, selectedLocation]);
 
-  const handleSearchQueryChange = async (nextQuery) => {
+  useEffect(() => {
+    if (!searchResults.length) return;
+
+    const pendingLocations = searchResults.filter((location) => {
+      const key = getLocationKey(location);
+      return !locationCache[key];
+    });
+
+    if (!pendingLocations.length) return;
+
+    const requestId = searchPreviewRequestRef.current + 1;
+    searchPreviewRequestRef.current = requestId;
+    let isActive = true;
+
+    const loadPreviews = async () => {
+      const previewEntries = await Promise.allSettled(
+        pendingLocations.map(async (location) => {
+          const currentWeather = await fetchCurrentWeather({
+            lat: location.lat,
+            lon: location.lon,
+            units: "metric",
+            lang: "en",
+          });
+          return [getLocationKey(location), buildCurrentSnapshot({ current: currentWeather, location })];
+        })
+      );
+
+      if (!isActive || searchPreviewRequestRef.current !== requestId) return;
+
+      const nextEntries = previewEntries.reduce((acc, result) => {
+        if (result.status !== "fulfilled") return acc;
+        const [key, snapshot] = result.value;
+        acc[key] = snapshot;
+        return acc;
+      }, {});
+
+      if (!Object.keys(nextEntries).length) return;
+
+      setLocationCache((prev) => ({ ...prev, ...nextEntries }));
+    };
+
+    loadPreviews();
+
+    return () => {
+      isActive = false;
+    };
+  }, [searchResults, locationCache]);
+
+  const handleSearchQueryChange = useCallback(async (nextQuery) => {
     const trimmed = nextQuery.trim();
     setSearchQuery(nextQuery);
     if (!trimmed) {
@@ -187,9 +263,9 @@ function App() {
       setSearchResults([]);
       setSearchStatus("error");
     }
-  };
+  }, []);
 
-  const handleSelectLocation = (location) => {
+  const handleSelectLocation = useCallback((location) => {
     setSelectedLocation(location);
     setSearchOpen(false);
     setSearchQuery("");
@@ -199,7 +275,38 @@ function App() {
       const without = prev.filter((item) => getLocationKey(item) !== key);
       return [location, ...without].slice(0, 5);
     });
-  };
+  }, []);
+
+  const handleUseCurrentLocation = useCallback(async () => {
+    try {
+      const position = await getCurrentDevicePosition();
+      const location = {
+        name: "Current Location",
+        lat: position.coords.latitude,
+        lon: position.coords.longitude,
+      };
+
+      try {
+        const reverseResults = await fetchReverseGeocoding({
+          lat: location.lat,
+          lon: location.lon,
+          limit: 1,
+        });
+        const reverseLocation = reverseResults?.[0];
+        if (reverseLocation?.name) {
+          location.name = reverseLocation.name;
+          location.state = reverseLocation.state;
+          location.country = reverseLocation.country;
+        }
+      } catch {
+        // Keep a generic label if reverse geocoding is unavailable.
+      }
+
+      handleSelectLocation(location);
+    } catch {
+      // Ignore permission denials or unavailable geolocation for now.
+    }
+  }, [handleSelectLocation]);
 
   const uiSnapshots = useMemo(() => {
     const currentSnapshot = buildCurrentSnapshot({ current, location: selectedLocation });
@@ -252,15 +359,23 @@ function App() {
     };
   });
 
-  const searchResultCards = searchResults.map((location) => ({
-    key: getLocationKey(location),
-    city: formatLocationFullName(location),
-    temperature: "--",
-    condition: "Tap to load",
-    highLow: "H:--  L:--",
-    icon: null,
-    location,
-  }));
+  const searchResultCards = searchResults.map((location) => {
+    const snapshot = locationCache[getLocationKey(location)];
+    const displayTemperature = snapshot?.temperature ?? "--";
+    const displayCondition = snapshot?.condition ?? "Loading...";
+    const displayHigh = snapshot?.high ?? "--";
+    const displayLow = snapshot?.low ?? "--";
+
+    return {
+      key: getLocationKey(location),
+      city: formatLocationFullName(location),
+      temperature: displayTemperature,
+      condition: displayCondition,
+      highLow: `H:${displayHigh}  L:${displayLow}`,
+      icon: snapshot?.icon ?? null,
+      location,
+    };
+  });
 
   return (
     <AppLayout>
@@ -286,7 +401,7 @@ function App() {
           clipPath: "inset(0 round 55px)",
         }}
       >
-          <SearchAdd
+        <SearchAdd
           onClose={() => setSearchOpen(false)}
           query={searchQuery}
           onQueryChange={handleSearchQueryChange}
@@ -302,7 +417,10 @@ function App() {
         className="absolute bottom-0 left-0 z-20 overflow-visible"
         style={tabBarStyle}
       >
-        <TabBar onOpenSearch={() => setSearchOpen(true)} />
+        <TabBar
+          onOpenSearch={() => setSearchOpen(true)}
+          onUseCurrentLocation={handleUseCurrentLocation}
+        />
       </div>
     </AppLayout>
   );

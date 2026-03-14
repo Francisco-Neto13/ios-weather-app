@@ -53,3 +53,10 @@ export const fetchGeocoding = ({ query, limit = 5 } = {}) => {
   if (!query) return Promise.resolve([]);
   return requestJson("/geo/1.0/direct", { q: query, limit });
 };
+
+export const fetchReverseGeocoding = ({ lat, lon, limit = 1 } = {}) => {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+    throw new Error("Latitude and longitude are required for Reverse Geocoding.");
+  }
+  return requestJson("/geo/1.0/reverse", { lat, lon, limit });
+};

@@ -17,9 +17,9 @@ const WeatherDetailsHeader = ({
       <span
         style={{
           position: 'absolute',
-          width: '129px',
+          width: '240px',
           height: '41px',
-          left: 'calc(50% - 64.5px)',
+          left: 'calc(50% - 120px)',
           top: '0px',
           fontFamily: "'SF Pro Display', -apple-system, sans-serif",
           fontWeight: 400,
@@ -29,53 +29,63 @@ const WeatherDetailsHeader = ({
           letterSpacing: '0.374px',
           color: '#FFFFFF',
           whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
           opacity: contentOpacity,
         }}
+        title={city}
       >
         {city}
       </span>
 
-      <span
+      <div
         style={{
           position: 'absolute',
-          width: '32px',
+          width: '220px',
           height: '24px',
-          left: 'calc(50% - 80px)',
+          left: 'calc(50% - 110px)',
           top: '39px',
-          fontFamily: "'SF Pro Display', -apple-system, sans-serif",
-          fontWeight: 600,
-          fontSize: '20px',
-          lineHeight: '24px',
-          textAlign: 'center',
-          letterSpacing: '0.38px',
-          color: 'rgba(235, 235, 245, 0.6)',
-          whiteSpace: 'nowrap',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '8px',
           opacity: contentOpacity,
         }}
       >
-        {temperature}
-      </span>
-
-      <span
-        style={{
-          position: 'absolute',
-          width: '125px',
-          height: '24px',
-          left: 'calc(50% - 45.5px)',
-          top: '39px',
-          fontFamily: "'SF Pro Display', -apple-system, sans-serif",
-          fontWeight: 600,
-          fontSize: '20px',
-          lineHeight: '24px',
-          textAlign: 'center',
-          letterSpacing: '0.38px',
-          color: 'rgba(235, 235, 245, 0.6)',
-          whiteSpace: 'nowrap',
-          opacity: contentOpacity,
-        }}
-      >
-        {condition}
-      </span>
+        <span
+          style={{
+            flexShrink: 0,
+            fontFamily: "'SF Pro Display', -apple-system, sans-serif",
+            fontWeight: 600,
+            fontSize: '20px',
+            lineHeight: '24px',
+            textAlign: 'center',
+            letterSpacing: '0.38px',
+            color: 'rgba(235, 235, 245, 0.6)',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {temperature}
+        </span>
+        <span
+          style={{
+            minWidth: 0,
+            fontFamily: "'SF Pro Display', -apple-system, sans-serif",
+            fontWeight: 600,
+            fontSize: '20px',
+            lineHeight: '24px',
+            textAlign: 'center',
+            letterSpacing: '0.38px',
+            color: 'rgba(235, 235, 245, 0.6)',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          }}
+          title={condition}
+        >
+          {condition}
+        </span>
+      </div>
     </div>
   );
 };

@@ -40,10 +40,12 @@ const BatteryIcon = () => (
 );
 
 const formatDeviceTime = (date = new Date()) => {
-  let hours = date.getHours() % 12;
+  const rawHours = date.getHours();
+  let hours = rawHours % 12;
   if (hours === 0) hours = 12;
   const minutes = String(date.getMinutes()).padStart(2, '0');
-  return `${hours}:${minutes}`;
+  const period = rawHours >= 12 ? 'PM' : 'AM';
+  return `${hours}:${minutes} ${period}`;
 };
 
 const StatusBar = ({ time }) => {
@@ -86,9 +88,9 @@ const StatusBar = ({ time }) => {
       <div
         style={{
           position: 'absolute',
-          width: '54px',
+          width: '84px',
           height: '21px',
-          left: '27px',
+          left: '14px',
           top: '14px',
           borderRadius: '24px',
         }}
@@ -96,7 +98,7 @@ const StatusBar = ({ time }) => {
         <span
           style={{
             position: 'absolute',
-            width: '54px',
+            width: '84px',
             height: '20px',
             left: '0px',
             top: '1px',

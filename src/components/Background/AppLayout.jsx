@@ -32,7 +32,7 @@ const AppLayout = ({ children }) => {
             className="relative z-20 w-full h-full"
             style={{ borderRadius: "55px", overflow: "hidden" }}
           >
-          {children}
+            {children}
           </div>
         </div>
 

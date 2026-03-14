@@ -16,6 +16,7 @@ const WeatherInfo = ({
   const containerHeight = lerp(183, 74, morphProgress);
 
   const cityOpacity = 1 - fadeOutProgress * 0.9;
+  const cityWidth = lerp(280, 200, morphProgress);
 
   const temperatureTop = lerp(53, 39, morphProgress);
   const temperatureLeft = lerp(195, 116, morphProgress);
@@ -25,6 +26,7 @@ const WeatherInfo = ({
 
   const conditionTop = lerp(141, 39, morphProgress);
   const conditionLeft = lerp(195, 212, morphProgress);
+  const conditionWidth = lerp(220, 132, morphProgress);
   const conditionFontSize = lerp(20, 20, morphProgress);
   const conditionLineHeight = lerp(24, 24, morphProgress);
   const conditionOpacity = 1 - fadeOutProgress * 0.9;
@@ -47,6 +49,7 @@ const WeatherInfo = ({
       <span
         style={{
           position: "absolute",
+          width: `${cityWidth}px`,
           left: "50%",
           top: "0px",
           transform: "translateX(-50%)",
@@ -57,6 +60,9 @@ const WeatherInfo = ({
           letterSpacing: "0.374px",
           color: "#FFFFFF",
           whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          textAlign: "center",
           opacity: cityOpacity,
         }}
       >
@@ -85,6 +91,7 @@ const WeatherInfo = ({
       <span
         style={{
           position: "absolute",
+          width: `${conditionWidth}px`,
           left: `${conditionLeft}px`,
           top: `${conditionTop}px`,
           transform: "translateX(-50%)",
@@ -95,6 +102,9 @@ const WeatherInfo = ({
           letterSpacing: "0.38px",
           color: "rgba(235, 235, 245, 0.6)",
           whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          textAlign: "center",
           opacity: conditionOpacity,
         }}
       >

@@ -113,7 +113,7 @@ export const buildWeeklyForecast = (forecastList = [], timezoneOffset) => {
     return acc;
   }, {});
 
-  const days = Object.keys(grouped).slice(0, 5);
+  const days = Object.keys(grouped).sort().slice(0, 5);
   return days.map((dayKey, index) => {
     const items = grouped[dayKey];
     const preferred =

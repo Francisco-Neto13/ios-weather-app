@@ -105,7 +105,7 @@ const WeatherWidget = ({
           position: 'absolute',
           left: '20px',
           top: '124px',
-          width: '136px',
+          width: '184px',
           display: 'flex',
           flexDirection: 'column',
           gap: '0px',
@@ -125,6 +125,7 @@ const WeatherWidget = ({
           {highLow}
         </p>
         <p
+          title={city}
           style={{
             margin: 0,
             fontFamily: "'SF Pro Text', -apple-system, sans-serif",
@@ -133,6 +134,9 @@ const WeatherWidget = ({
             lineHeight: '18px',
             letterSpacing: '-0.078px',
             color: '#FFFFFF',
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
           }}
         >
           {city}
@@ -140,11 +144,12 @@ const WeatherWidget = ({
       </div>
 
       <span
+        title={condition}
         style={{
           position: 'absolute',
-          left: '265px',
+          left: '230px',
           top: '142px',
-          width: '53px',
+          width: '88px',
           fontFamily: "'SF Pro Text', -apple-system, sans-serif",
           fontWeight: 400,
           fontSize: '13px',
@@ -152,6 +157,9 @@ const WeatherWidget = ({
           letterSpacing: '-0.078px',
           textAlign: 'right',
           color: '#FFFFFF',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
         }}
       >
         {condition}
