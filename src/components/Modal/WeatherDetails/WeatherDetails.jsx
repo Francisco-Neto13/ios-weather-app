@@ -9,6 +9,7 @@ import FeelsLikeWidget from './FeelsLikeWidget';
 import HumidityWidget from './HumidityWidget';
 import VisibilityWidget from './VisibilityWidget';
 import PressureWidget from './PressureWidget';
+import { widgetGridRowStyle } from './styles/widgetLayoutStyles';
 
 const WeatherDetails = ({
   scrollRef = null,
@@ -16,6 +17,8 @@ const WeatherDetails = ({
   contentTopInset = 16,
   segmentedControl = null,
   forecast = null,
+  header = null,
+  widgets = {},
 }) => {
   const hasForecastSection = Boolean(segmentedControl || forecast);
   const forecastTop = 142;
@@ -83,7 +86,7 @@ const WeatherDetails = ({
               width: '390px',
             }}
           >
-            <WeatherDetailsHeader />
+            <WeatherDetailsHeader {...header} />
           </div>
         )}
 
@@ -114,26 +117,26 @@ const WeatherDetails = ({
             paddingBottom: '40px',
           }}
         >
-          <MediumWidget />
+          <MediumWidget {...(widgets?.airQuality ?? {})} />
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '14px' }}>
-            <UVIndexWidget />
-            <SunriseWidget />
+          <div style={widgetGridRowStyle}>
+            <UVIndexWidget {...(widgets?.uvIndex ?? {})} />
+            <SunriseWidget {...(widgets?.sunrise ?? {})} />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '14px' }}>
-            <WindWidget />
-            <RainfallWidget />
+          <div style={widgetGridRowStyle}>
+            <WindWidget {...(widgets?.wind ?? {})} />
+            <RainfallWidget {...(widgets?.rainfall ?? {})} />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '14px' }}>
-            <FeelsLikeWidget />
-            <HumidityWidget />
+          <div style={widgetGridRowStyle}>
+            <FeelsLikeWidget {...(widgets?.feelsLike ?? {})} />
+            <HumidityWidget {...(widgets?.humidity ?? {})} />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'row', gap: '14px' }}>
-            <VisibilityWidget />
-            <PressureWidget />
+          <div style={widgetGridRowStyle}>
+            <VisibilityWidget {...(widgets?.visibility ?? {})} />
+            <PressureWidget {...(widgets?.pressure ?? {})} />
           </div>
         </div>
       </div>
@@ -142,4 +145,3 @@ const WeatherDetails = ({
 };
 
 export default WeatherDetails;
-

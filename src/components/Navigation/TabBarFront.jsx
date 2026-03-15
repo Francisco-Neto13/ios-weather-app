@@ -2,7 +2,10 @@
 
 const TabBarFront = () => {
   return (
-    <div className="absolute inset-0" style={{ overflow: "visible" }}>
+    <div
+      className="absolute inset-0"
+      style={{ overflow: "visible", pointerEvents: "none" }}
+    >
       <div
         className="absolute inset-0"
         style={{

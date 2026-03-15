@@ -1,56 +1,46 @@
 import React from 'react';
+import {
+  weatherDetailIcons,
+  widgetHeaderIconStyle,
+  widgetHeaderIconWrapStyle,
+  widgetHeaderLabelStyle,
+  widgetHeaderRowStyle,
+} from './styles/widgetHeaderStyles';
+import { secondaryWidgetTextStyle, smallWidgetCardStyle } from './styles/widgetLayoutStyles';
 
 const RainfallWidget = ({
-  icon = '/widgets/rainfall.png',
+  icon = weatherDetailIcons.rainfall,
   amount = 1.8,
   unit = 'mm',
   period = 'in last hour',
   forecast = '1.2 mm expected in next 24h.',
 }) => {
+  const displayAmount = amount ?? '--';
+  const displayForecast = forecast || 'Rain forecast unavailable.';
+
   return (
-    <div
-      style={{
-        boxSizing: 'border-box',
-        width: '164px',
-        height: '164px',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        borderRadius: '22px',
-        background: '#1f1a32',
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        fontFamily: "'SF Pro Display', -apple-system, sans-serif",
-        flexShrink: 0,
-      }}
-    >
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+    <div style={smallWidgetCardStyle}>
+      <div style={widgetHeaderRowStyle}>
         {icon && (
-          <img src={icon} alt="Rainfall" style={{ width: '16px', height: '16px', objectFit: 'contain' }} />
+          <div style={widgetHeaderIconWrapStyle}>
+            <img src={icon} alt="Rainfall" style={widgetHeaderIconStyle} />
+          </div>
         )}
-        <span style={{ fontSize: '12px', fontWeight: 600, letterSpacing: '0.5px', color: 'rgba(235, 235, 245, 0.6)', textTransform: 'uppercase' }}>
-          Rainfall
-        </span>
+        <span style={widgetHeaderLabelStyle}>Rainfall</span>
       </div>
 
-      {/* Valor */}
       <div>
         <p style={{ margin: 0, fontSize: '30px', fontWeight: 400, color: '#FFFFFF', lineHeight: 1.1 }}>
-          {amount} {unit}
+          {displayAmount} {unit}
         </p>
         <p style={{ margin: '4px 0 0', fontSize: '16px', fontWeight: 600, color: '#FFFFFF' }}>
           {period}
         </p>
       </div>
 
-      {/* Previsão */}
-      <p style={{ margin: 0, fontSize: '13px', color: 'rgba(235, 235, 245, 0.6)', lineHeight: 1.4 }}>
-        {forecast}
-      </p>
+      <p style={secondaryWidgetTextStyle}>{displayForecast}</p>
     </div>
   );
 };
 
 export default RainfallWidget;
-
