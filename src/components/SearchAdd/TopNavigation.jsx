@@ -1,10 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-const TopNavigation = ({ onClose, query = '', onQueryChange, isSearching = false }) => {
+const TopNavigation = ({
+  onClose,
+  query = '',
+  onQueryChange,
+  onClearVisibleList,
+  canClearVisibleList = false,
+  isSearching = false,
+}) => {
   const [draftQuery, setDraftQuery] = useState(query);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
 
   useEffect(() => {
     setDraftQuery(query);
+  }, [query]);
+
+  useEffect(() => {
+    setIsMenuOpen(false);
   }, [query]);
 
   useEffect(() => {
@@ -14,6 +27,18 @@ const TopNavigation = ({ onClose, query = '', onQueryChange, isSearching = false
 
     return () => clearTimeout(handle);
   }, [draftQuery, onQueryChange]);
+
+  useEffect(() => {
+    if (!isMenuOpen) return undefined;
+
+    const handlePointerDown = (event) => {
+      if (menuRef.current?.contains(event.target)) return;
+      setIsMenuOpen(false);
+    };
+
+    window.addEventListener('pointerdown', handlePointerDown);
+    return () => window.removeEventListener('pointerdown', handlePointerDown);
+  }, [isMenuOpen]);
 
   return (
     <div
@@ -85,6 +110,7 @@ const TopNavigation = ({ onClose, query = '', onQueryChange, isSearching = false
         </div>
 
         <div
+          ref={menuRef}
           style={{
             display: 'flex',
             flexDirection: 'row',
@@ -93,20 +119,83 @@ const TopNavigation = ({ onClose, query = '', onQueryChange, isSearching = false
             padding: '9px 16px 9px 9px',
             flex: 1,
             height: '52px',
+            position: 'relative',
           }}
         >
-          <svg
-            width="28"
-            height="28"
-            viewBox="0 0 28 28"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
+          <button
+            type="button"
+            aria-label="Open list options"
+            onClick={() => setIsMenuOpen((open) => !open)}
+            style={{
+              width: '28px',
+              height: '28px',
+              padding: 0,
+              border: 'none',
+              background: 'transparent',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              position: 'relative',
+              zIndex: 1,
+            }}
           >
-            <path
-              d="M13.9453 27.8906C21.5742 27.8906 27.8906 21.5605 27.8906 13.9453C27.8906 6.31641 21.5605 0 13.9316 0C6.31641 0 0 6.31641 0 13.9453C0 21.5605 6.33008 27.8906 13.9453 27.8906ZM13.9453 25.5664C7.49219 25.5664 2.33789 20.3984 2.33789 13.9453C2.33789 7.49219 7.47852 2.32422 13.9316 2.32422C20.3848 2.32422 25.5527 7.49219 25.5664 13.9453C25.5801 20.3984 20.3984 25.5664 13.9453 25.5664ZM7.56055 15.9277C8.6543 15.9277 9.54297 15.0391 9.54297 13.9316C9.54297 12.8379 8.64062 11.9492 7.56055 11.9492C6.45312 11.9492 5.56445 12.8379 5.56445 13.9316C5.56445 15.0391 6.45312 15.9277 7.56055 15.9277ZM13.9316 15.9277C15.0254 15.9277 15.9277 15.0391 15.9277 13.9316C15.9277 12.8379 15.0254 11.9492 13.9316 11.9492C12.8379 11.9492 11.9355 12.8379 11.9355 13.9316C11.9355 15.0391 12.8379 15.9277 13.9316 15.9277ZM20.3164 15.9277C21.4102 15.9277 22.2988 15.0391 22.2988 13.9316C22.2988 12.8379 21.4102 11.9492 20.3164 11.9492C19.209 11.9492 18.3203 12.8379 18.3203 13.9316C18.3203 15.0391 19.209 15.9277 20.3164 15.9277Z"
-              fill="white"
-            />
-          </svg>
+            <svg
+              width="28"
+              height="28"
+              viewBox="0 0 28 28"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13.9453 27.8906C21.5742 27.8906 27.8906 21.5605 27.8906 13.9453C27.8906 6.31641 21.5605 0 13.9316 0C6.31641 0 0 6.31641 0 13.9453C0 21.5605 6.33008 27.8906 13.9453 27.8906ZM13.9453 25.5664C7.49219 25.5664 2.33789 20.3984 2.33789 13.9453C2.33789 7.49219 7.47852 2.32422 13.9316 2.32422C20.3848 2.32422 25.5527 7.49219 25.5664 13.9453C25.5801 20.3984 20.3984 25.5664 13.9453 25.5664ZM7.56055 15.9277C8.6543 15.9277 9.54297 15.0391 9.54297 13.9316C9.54297 12.8379 8.64062 11.9492 7.56055 11.9492C6.45312 11.9492 5.56445 12.8379 5.56445 13.9316C5.56445 15.0391 6.45312 15.9277 7.56055 15.9277ZM13.9316 15.9277C15.0254 15.9277 15.9277 15.0391 15.9277 13.9316C15.9277 12.8379 15.0254 11.9492 13.9316 11.9492C12.8379 11.9492 11.9355 12.8379 11.9355 13.9316C11.9355 15.0391 12.8379 15.9277 13.9316 15.9277ZM20.3164 15.9277C21.4102 15.9277 22.2988 15.0391 22.2988 13.9316C22.2988 12.8379 21.4102 11.9492 20.3164 11.9492C19.209 11.9492 18.3203 12.8379 18.3203 13.9316C18.3203 15.0391 19.209 15.9277 20.3164 15.9277Z"
+                fill="white"
+              />
+            </svg>
+          </button>
+
+          {isMenuOpen && (
+            <div
+              style={{
+                position: 'absolute',
+                top: '48px',
+                right: '12px',
+                minWidth: '154px',
+              }}
+            >
+              <button
+                type="button"
+                disabled={!canClearVisibleList}
+                onClick={() => {
+                  onClearVisibleList?.();
+                  setIsMenuOpen(false);
+                }}
+                style={{
+                  width: '100%',
+                  border: 'none',
+                  borderRadius: '10px',
+                  padding: '10px 12px',
+                  background: canClearVisibleList
+                    ? '#242041'
+                    : 'rgba(36, 32, 65, 0.45)',
+                  boxShadow:
+                    '0px 18px 40px rgba(10, 10, 24, 0.32), inset 0px 1px 0px rgba(255,255,255,0.25)',
+                  backdropFilter: 'blur(20px)',
+                  WebkitBackdropFilter: 'blur(20px)',
+                  color: canClearVisibleList ? '#FFFFFF' : 'rgba(235, 235, 245, 0.55)',
+                  fontFamily: "'SF Pro Text', -apple-system, sans-serif",
+                  fontWeight: 600,
+                  fontSize: '14px',
+                  lineHeight: '18px',
+                  textAlign: 'center',
+                  cursor: canClearVisibleList ? 'pointer' : 'default',
+                  position: 'relative',
+                }}
+              >
+                {'Limpar sele\u00e7\u00e3o'}
+              </button>
+            </div>
+          )}
         </div>
       </div>
 

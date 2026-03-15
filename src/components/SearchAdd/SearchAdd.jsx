@@ -8,6 +8,7 @@ const SearchAdd = ({
   onClose,
   query = '',
   onQueryChange,
+  onClearVisibleList,
   searchResults = [],
   savedLocations = [],
   onSelectLocation,
@@ -41,6 +42,8 @@ const SearchAdd = ({
         onClose={onClose}
         query={query}
         onQueryChange={onQueryChange}
+        onClearVisibleList={onClearVisibleList}
+        canClearVisibleList={list.length > 0}
         isSearching={isSearching}
       />
 
