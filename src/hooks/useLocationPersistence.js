@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   DEFAULT_LOCATION,
   STORAGE_KEYS,
@@ -7,36 +7,42 @@ import {
   writeStorage,
 } from "../lib/locationStore";
 
+const readStoredLocations = () => {
+  const storedLocations = readStorage(STORAGE_KEYS.locations, null);
+
+  return Array.isArray(storedLocations) && storedLocations.length
+    ? storedLocations
+    : [DEFAULT_LOCATION];
+};
+
+const readStoredCache = () => {
+  const storedCache = readStorage(STORAGE_KEYS.cache, {});
+
+  return storedCache && typeof storedCache === "object" ? storedCache : {};
+};
+
 export const useLocationPersistence = () => {
-  const [selectedLocation, setSelectedLocation] = useState(DEFAULT_LOCATION);
-  const [savedLocations, setSavedLocations] = useState([DEFAULT_LOCATION]);
-  const [locationCache, setLocationCache] = useState({});
-  const [hasHydratedStorage, setHasHydratedStorage] = useState(false);
+  const [savedLocations, setSavedLocations] = useState(readStoredLocations);
+  const [selectedLocation, setSelectedLocation] = useState(() => readStoredLocations()[0]);
+  const [locationCache, setLocationCache] = useState(readStoredCache);
+  const hasPersistedLocationsRef = useRef(false);
+  const hasPersistedCacheRef = useRef(false);
 
   useEffect(() => {
-    const storedLocations = readStorage(STORAGE_KEYS.locations, null);
-    if (Array.isArray(storedLocations) && storedLocations.length) {
-      setSavedLocations(storedLocations);
-      setSelectedLocation(storedLocations[0]);
+    if (!hasPersistedLocationsRef.current) {
+      hasPersistedLocationsRef.current = true;
+      return;
     }
-
-    const storedCache = readStorage(STORAGE_KEYS.cache, {});
-    if (storedCache && typeof storedCache === "object") {
-      setLocationCache(storedCache);
-    }
-
-    setHasHydratedStorage(true);
-  }, []);
-
-  useEffect(() => {
-    if (!hasHydratedStorage) return;
     writeStorage(STORAGE_KEYS.locations, savedLocations);
-  }, [hasHydratedStorage, savedLocations]);
+  }, [savedLocations]);
 
   useEffect(() => {
-    if (!hasHydratedStorage) return;
+    if (!hasPersistedCacheRef.current) {
+      hasPersistedCacheRef.current = true;
+      return;
+    }
     writeStorage(STORAGE_KEYS.cache, locationCache);
-  }, [hasHydratedStorage, locationCache]);
+  }, [locationCache]);
 
   const selectLocation = useCallback((location) => {
     setSelectedLocation(location);

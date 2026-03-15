@@ -8,6 +8,27 @@ const weatherWidgetIcons = {
   tornado: '/widgets/small/tornado.png',
 };
 
+const fallbackHourlyData = [
+  { hour: '12 AM', icon: weatherWidgetIcons.moonCloudRain, degree: '19°', precipitation: '30%', isActive: false },
+  { hour: 'Now', icon: weatherWidgetIcons.moonCloudWind, degree: '19°', precipitation: null, isActive: true },
+  { hour: '2 AM', icon: weatherWidgetIcons.moonCloudWind, degree: '18°', precipitation: null, isActive: false },
+  { hour: '3 AM', icon: weatherWidgetIcons.moonCloudRain, degree: '19°', precipitation: null, isActive: false },
+  { hour: '4 AM', icon: weatherWidgetIcons.moonCloudRain, degree: '19°', precipitation: null, isActive: false },
+  { hour: '5 AM', icon: weatherWidgetIcons.sunCloudAngledRain, degree: '19°', precipitation: null, isActive: false },
+  { hour: '6 AM', icon: weatherWidgetIcons.sunCloudRain, degree: '19°', precipitation: null, isActive: false },
+  { hour: '7 AM', icon: weatherWidgetIcons.sunCloudRain, degree: '19°', precipitation: null, isActive: false },
+];
+
+const fallbackWeeklyData = [
+  { hour: 'Mon', icon: weatherWidgetIcons.sunCloudAngledRain, degree: '21°', precipitation: '30%', isActive: false },
+  { hour: 'Tue', icon: weatherWidgetIcons.sunCloudRain, degree: '19°', precipitation: null, isActive: true },
+  { hour: 'Wed', icon: weatherWidgetIcons.moonCloudRain, degree: '18°', precipitation: '25%', isActive: false },
+  { hour: 'Thu', icon: weatherWidgetIcons.tornado, degree: '22°', precipitation: '20%', isActive: false },
+  { hour: 'Fri', icon: weatherWidgetIcons.sunCloudRain, degree: '20°', precipitation: null, isActive: false },
+  { hour: 'Sat', icon: weatherWidgetIcons.moonCloudWind, degree: '17°', precipitation: null, isActive: false },
+  { hour: 'Sun', icon: weatherWidgetIcons.sunCloudAngledRain, degree: '23°', precipitation: null, isActive: false },
+];
+
 const ForecastCard = ({ hour, icon, degree, precipitation, isActive = false }) => {
   return (
     <div
@@ -104,27 +125,6 @@ const ModalForecast = ({ activeTab = 'hourly', hourlyData = [], weeklyData = [] 
     startScrollLeft: 0,
     scroller: null,
   });
-
-  const fallbackHourlyData = [
-    { hour: '12 AM', icon: weatherWidgetIcons.moonCloudRain, degree: '19°', precipitation: '30%', isActive: false },
-    { hour: 'Now', icon: weatherWidgetIcons.moonCloudWind, degree: '19°', precipitation: null, isActive: true },
-    { hour: '2 AM', icon: weatherWidgetIcons.moonCloudWind, degree: '18°', precipitation: null, isActive: false },
-    { hour: '3 AM', icon: weatherWidgetIcons.moonCloudRain, degree: '19°', precipitation: null, isActive: false },
-    { hour: '4 AM', icon: weatherWidgetIcons.moonCloudRain, degree: '19°', precipitation: null, isActive: false },
-    { hour: '5 AM', icon: weatherWidgetIcons.sunCloudAngledRain, degree: '19°', precipitation: null, isActive: false },
-    { hour: '6 AM', icon: weatherWidgetIcons.sunCloudRain, degree: '19°', precipitation: null, isActive: false },
-    { hour: '7 AM', icon: weatherWidgetIcons.sunCloudRain, degree: '19°', precipitation: null, isActive: false },
-  ];
-
-  const fallbackWeeklyData = [
-    { hour: 'Mon', icon: weatherWidgetIcons.sunCloudAngledRain, degree: '21°', precipitation: '30%', isActive: false },
-    { hour: 'Tue', icon: weatherWidgetIcons.sunCloudRain, degree: '19°', precipitation: null, isActive: true },
-    { hour: 'Wed', icon: weatherWidgetIcons.moonCloudRain, degree: '18°', precipitation: '25%', isActive: false },
-    { hour: 'Thu', icon: weatherWidgetIcons.tornado, degree: '22°', precipitation: '20%', isActive: false },
-    { hour: 'Fri', icon: weatherWidgetIcons.sunCloudRain, degree: '20°', precipitation: null, isActive: false },
-    { hour: 'Sat', icon: weatherWidgetIcons.moonCloudWind, degree: '17°', precipitation: null, isActive: false },
-    { hour: 'Sun', icon: weatherWidgetIcons.sunCloudAngledRain, degree: '23°', precipitation: null, isActive: false },
-  ];
 
   const resolvedHourlyData = useMemo(
     () => (hourlyData.length ? hourlyData : fallbackHourlyData),

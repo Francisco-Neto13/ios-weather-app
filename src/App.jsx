@@ -28,6 +28,7 @@ function App() {
     clearSavedLocations,
   } = useLocationPersistence();
   const { current, status, uiSnapshots } = useWeatherData(selectedLocation);
+  const currentSnapshot = uiSnapshots.current;
   const {
     searchQuery,
     searchStatus,
@@ -107,7 +108,7 @@ function App() {
     () =>
       savedLocations.map((location) => {
         const isActive = getLocationKey(location) === selectedKey;
-        const snapshot = isActive ? uiSnapshots.current : locationCache[getLocationKey(location)];
+        const snapshot = isActive ? currentSnapshot : locationCache[getLocationKey(location)];
         const displayTemperature = snapshot?.temperature ?? "--";
         const displayCondition = snapshot?.condition ?? "Tap to load";
         const displayHigh = snapshot?.high ?? "--";
@@ -123,14 +124,14 @@ function App() {
           location,
         };
       }),
-    [locationCache, savedLocations, selectedKey, uiSnapshots.current]
+    [currentSnapshot, locationCache, savedLocations, selectedKey]
   );
 
   return (
     <AppLayout>
       <StatusBar time={uiSnapshots.statusTime} />
       <House />
-      <WeatherInfo sheetProgress={sheetProgress} {...uiSnapshots.current} />
+      <WeatherInfo sheetProgress={sheetProgress} {...currentSnapshot} />
       <Modal
         onSheetProgress={setSheetProgress}
         header={uiSnapshots.header}

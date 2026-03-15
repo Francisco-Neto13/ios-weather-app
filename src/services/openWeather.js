@@ -1,21 +1,14 @@
-const OPEN_WEATHER_BASE_URL = "https://api.openweathermap.org";
-
-const getApiKey = () => {
-  const apiKey = import.meta.env.VITE_OPENWEATHER_API_KEY;
-  if (!apiKey) {
-    throw new Error("Missing VITE_OPENWEATHER_API_KEY environment variable.");
-  }
-  return apiKey;
-};
+const OPEN_WEATHER_PROXY_BASE_URL = "/api/openweather";
 
 const buildUrl = (path, params = {}) => {
-  const url = new URL(path, OPEN_WEATHER_BASE_URL);
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  const url = new URL(OPEN_WEATHER_PROXY_BASE_URL, window.location.origin);
+  url.searchParams.set("path", normalizedPath);
   Object.entries(params).forEach(([key, value]) => {
     if (value === undefined || value === null || value === "") return;
     url.searchParams.set(key, value);
   });
-  url.searchParams.set("appid", getApiKey());
-  return url.toString();
+  return `${url.pathname}${url.search}`;
 };
 
 const requestJson = async (path, params) => {
