@@ -9,9 +9,11 @@ const WeatherWidget = ({
   highLow = 'H:24\u00B0  L:18\u00B0',
   icon = DEFAULT_BIG_ICON,
   onSelect,
+  disablePressFeedback = false,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
   const isInteractive = typeof onSelect === 'function';
+  const allowPressFeedback = isInteractive && !disablePressFeedback;
 
   return (
     <button
@@ -31,11 +33,11 @@ const WeatherWidget = ({
         boxSizing: 'border-box',
         cursor: isInteractive ? 'pointer' : 'default',
         textAlign: 'left',
-        transform: isPressed && isInteractive ? 'scale(0.985)' : 'scale(1)',
-        filter: isPressed && isInteractive ? 'brightness(1.04)' : 'brightness(1)',
+        transform: isPressed && allowPressFeedback ? 'scale(0.985)' : 'scale(1)',
+        filter: isPressed && allowPressFeedback ? 'brightness(1.04)' : 'brightness(1)',
         transition: 'transform 0.16s ease, filter 0.16s ease',
       }}
-      onPointerDown={() => setIsPressed(true)}
+      onPointerDown={() => setIsPressed(allowPressFeedback)}
       onPointerUp={() => setIsPressed(false)}
       onPointerLeave={() => setIsPressed(false)}
       onPointerCancel={() => setIsPressed(false)}
@@ -73,6 +75,7 @@ const WeatherWidget = ({
           src={icon}
           alt=""
           aria-hidden="true"
+          draggable={false}
           style={{
             position: 'absolute',
             width: '160px',
@@ -80,6 +83,8 @@ const WeatherWidget = ({
             left: '178px',
             top: '-12px',
             objectFit: 'contain',
+            pointerEvents: 'none',
+            userSelect: 'none',
           }}
         />
       ) : null}

@@ -11,13 +11,14 @@ const SheetDragHandle = ({
     <div
       style={{
         position: 'absolute',
-        left: 'calc(50% - 40px)',
-        top: '2px',
-        width: '80px',
-        height: '24px',
+        left: 'calc(50% - 70px)',
+        top: '-8px',
+        width: '140px',
+        height: '44px',
         zIndex: 9,
         cursor: isDragging ? 'grabbing' : 'grab',
         touchAction: 'none',
+        WebkitTapHighlightColor: 'transparent',
       }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -27,8 +28,8 @@ const SheetDragHandle = ({
       <div
         style={{
           position: 'absolute',
-          top: '6px',
-          left: '0px',
+          top: '16px',
+          left: '30px',
           width: '80px',
           height: '12px',
           display: 'flex',

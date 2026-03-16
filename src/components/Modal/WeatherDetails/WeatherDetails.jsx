@@ -30,7 +30,7 @@ const WeatherDetails = ({
   });
   const hasForecastSection = Boolean(segmentedControl || forecast);
   const forecastTop = 142;
-  const widgetsTop = hasForecastSection ? 402 : contentTopInset;
+  const widgetsTop = hasForecastSection ? 376 : contentTopInset;
   const contentHeight = widgetsTop + 880;
 
   useEffect(() => {

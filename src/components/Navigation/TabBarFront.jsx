@@ -1,37 +1,133 @@
-﻿import React from "react";
+import React, { useEffect, useRef, useState } from "react";
+
+const TOOLTIP_TEXT = "Botão sem funcionalidade no layout original";
 
 const TabBarFront = () => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const hideTooltipTimeoutRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (hideTooltipTimeoutRef.current) {
+        clearTimeout(hideTooltipTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const revealTooltip = () => {
+    if (hideTooltipTimeoutRef.current) {
+      clearTimeout(hideTooltipTimeoutRef.current);
+      hideTooltipTimeoutRef.current = null;
+    }
+
+    setShowTooltip(true);
+  };
+
+  const scheduleTooltipHide = () => {
+    if (hideTooltipTimeoutRef.current) {
+      clearTimeout(hideTooltipTimeoutRef.current);
+    }
+
+    hideTooltipTimeoutRef.current = setTimeout(() => {
+      setShowTooltip(false);
+      hideTooltipTimeoutRef.current = null;
+    }, 180);
+  };
+
+  const handleCenterButtonClick = (event) => {
+    event.preventDefault();
+    revealTooltip();
+
+    if (hideTooltipTimeoutRef.current) {
+      clearTimeout(hideTooltipTimeoutRef.current);
+    }
+
+    hideTooltipTimeoutRef.current = setTimeout(() => {
+      setShowTooltip(false);
+      hideTooltipTimeoutRef.current = null;
+    }, 1800);
+  };
+
   return (
-    <div
-      className="absolute inset-0"
-      style={{ overflow: "visible", pointerEvents: "none" }}
-    >
+    <>
       <div
         className="absolute inset-0"
-        style={{
-          background: "linear-gradient(360deg, #262C51 0%, #3E3F74 100%)",
-          clipPath:
-            'path("M174 0H216C248 0 257.501 24.1398 267.732 48.6985C278.325 74.1247 289 100 324 100H66.0001C101 100 111.675 74.1247 122.268 48.6985C132.499 24.1398 142 0 174 0Z")',
-        }}
-      />
-      <svg
-        width="390"
-        height="100"
-        viewBox="0 0 390 100"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="absolute inset-0 pointer-events-none"
+        style={{ overflow: "visible", pointerEvents: "none" }}
       >
-        <path
-          d="M174 0.25H216C231.923 0.25 242.229 6.24992 249.838 15.3008C257.462 24.37 262.382 36.5041 267.502 48.7949C272.794 61.4986 278.125 74.3646 286.524 84.0479C293.574 92.1753 302.781 98.0562 315.919 99.75H74.0811C87.2187 98.0562 96.4259 92.1753 103.476 84.0479C111.875 74.3646 117.206 61.4986 122.498 48.7949C127.618 36.5041 132.538 24.37 140.162 15.3008C147.771 6.24992 158.077 0.25 174 0.25Z"
-          stroke="#7582F4"
-          strokeOpacity="0.5"
-          strokeWidth="0.5"
+        <div
+          className="absolute inset-0"
+          style={{
+            background: "linear-gradient(360deg, #262C51 0%, #3E3F74 100%)",
+            clipPath:
+              'path("M174 0H216C248 0 257.501 24.1398 267.732 48.6985C278.325 74.1247 289 100 324 100H66.0001C101 100 111.675 74.1247 122.268 48.6985C132.499 24.1398 142 0 174 0Z")',
+          }}
         />
-      </svg>
-      <div
-        className="absolute z-10 w-[64px] h-[64px] flex items-center justify-center"
-        style={{ left: "163px", top: "12px" }}
+        <svg
+          width="390"
+          height="100"
+          viewBox="0 0 390 100"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="absolute inset-0 pointer-events-none"
+        >
+          <path
+            d="M174 0.25H216C231.923 0.25 242.229 6.24992 249.838 15.3008C257.462 24.37 262.382 36.5041 267.502 48.7949C272.794 61.4986 278.125 74.3646 286.524 84.0479C293.574 92.1753 302.781 98.0562 315.919 99.75H74.0811C87.2187 98.0562 96.4259 92.1753 103.476 84.0479C111.875 74.3646 117.206 61.4986 122.498 48.7949C127.618 36.5041 132.538 24.37 140.162 15.3008C147.771 6.24992 158.077 0.25 174 0.25Z"
+            stroke="#7582F4"
+            strokeOpacity="0.5"
+            strokeWidth="0.5"
+          />
+        </svg>
+      </div>
+
+      {showTooltip && (
+        <div
+          className="absolute z-30"
+          style={{
+            left: "195px",
+            top: "-18px",
+            transform: "translateX(-50%)",
+            pointerEvents: "none",
+          }}
+        >
+          <div
+            style={{
+              maxWidth: "220px",
+              padding: "8px 10px",
+              borderRadius: "12px",
+              background: "rgba(22, 24, 43, 0.94)",
+              color: "#FFFFFF",
+              fontFamily: "'SF Pro Text', -apple-system, sans-serif",
+              fontSize: "12px",
+              lineHeight: "15px",
+              textAlign: "center",
+              boxShadow: "0 10px 24px rgba(0, 0, 0, 0.3)",
+            }}
+          >
+            {TOOLTIP_TEXT}
+          </div>
+        </div>
+      )}
+
+      <button
+        type="button"
+        className="absolute z-20 flex items-center justify-center"
+        style={{
+          left: "163px",
+          top: "12px",
+          width: "64px",
+          height: "64px",
+          border: "none",
+          background: "transparent",
+          padding: 0,
+          cursor: "help",
+        }}
+        title={TOOLTIP_TEXT}
+        aria-label={TOOLTIP_TEXT}
+        onMouseEnter={revealTooltip}
+        onMouseLeave={scheduleTooltipHide}
+        onFocus={revealTooltip}
+        onBlur={scheduleTooltipHide}
+        onClick={handleCenterButtonClick}
       >
         <div
           className="absolute inset-0 rounded-full"
@@ -99,8 +195,8 @@ const TabBarFront = () => {
             pointerEvents: "none",
           }}
         />
-      </div>
-    </div>
+      </button>
+    </>
   );
 };
 
