@@ -13,6 +13,7 @@ const MAIN_PANEL_OPEN_TOP = 142;
 const DETAILS_CLOSED_TOP = APP_FRAME_HEIGHT;
 const HEADER_TOP = 52;
 const HEADER_REVEAL_DISTANCE = 80;
+const FLOATING_FORECAST_OVERLAP = 12;
 const DETAILS_CONTENT_TOP_WITH_FORECAST = 142;
 const DETAILS_CONTENT_TOP_WITHOUT_FORECAST = 376;
 
@@ -106,8 +107,9 @@ const Modal = ({ onSheetProgress, header, forecast, widgets }) => {
     }
   }, [openProgress]);
 
-  const mainPanelTop = MAIN_PANEL_CLOSED_TOP - (MAIN_PANEL_CLOSED_TOP - MAIN_PANEL_OPEN_TOP) * openProgress;
-  const detailsTop = DETAILS_CLOSED_TOP * (1 - openProgress);
+  const mainPanelTop = Math.round(
+    MAIN_PANEL_CLOSED_TOP - (MAIN_PANEL_CLOSED_TOP - MAIN_PANEL_OPEN_TOP) * openProgress
+  );
   const forecastTop = mainPanelTop;
   const headerTrackTop = Math.max(0, forecastTop - 142);
   const headerRevealProgress = clamp(
@@ -124,6 +126,9 @@ const Modal = ({ onSheetProgress, header, forecast, widgets }) => {
     ? DETAILS_CONTENT_TOP_WITH_FORECAST
     : DETAILS_CONTENT_TOP_WITHOUT_FORECAST;
   const showFloatingForecast = !embedForecastInDetails;
+  const detailsTop = Math.round(
+    DETAILS_CLOSED_TOP * (1 - openProgress) - (showFloatingForecast ? FLOATING_FORECAST_OVERLAP : 0)
+  );
 
   useEffect(() => {
     if (!embedForecastInDetails) return;
@@ -177,6 +182,7 @@ const Modal = ({ onSheetProgress, header, forecast, widgets }) => {
           height: `${APP_FRAME_HEIGHT}px`,
           left: '0px',
           top: `${detailsTop}px`,
+          overflow: 'visible',
           opacity: detailsOpacity,
           transition: isDraggingHandle
             ? 'none'
@@ -185,6 +191,20 @@ const Modal = ({ onSheetProgress, header, forecast, widgets }) => {
           pointerEvents: openProgress > 0.02 ? 'auto' : 'none',
         }}
       >
+        {showFloatingForecast && (
+          <div
+            style={{
+              position: 'absolute',
+              width: '390px',
+              height: '20px',
+              left: '0px',
+              top: '-16px',
+              background: '#3d2b58',
+              borderRadius: '20px 20px 0px 0px',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
         <WeatherDetails
           key={detailsViewKey}
           scrollRef={detailsScrollRef}

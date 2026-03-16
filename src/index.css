@@ -73,6 +73,16 @@
     margin: 0;
     padding: 0;
   }
+
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  img::selection {
+    background: transparent;
+  }
 }
 
 .weather-temp-thin {

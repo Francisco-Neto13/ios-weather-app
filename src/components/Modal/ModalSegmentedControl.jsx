@@ -3,6 +3,7 @@ import React from 'react';
 const ModalSegmentedControl = ({ activeTab = 'hourly', onTabChange }) => {
   return (
     <div
+      data-drag-lock="true"
       style={{
         position: 'absolute',
         width: '390px',

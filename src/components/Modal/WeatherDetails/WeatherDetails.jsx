@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import WeatherDetailsHeader from './WeatherDetailsHeader';
 import MediumWidget from './MediumWidget';
 import UVIndexWidget from './UVIndexWidget';
@@ -20,15 +20,71 @@ const WeatherDetails = ({
   header = null,
   widgets = {},
 }) => {
+  const containerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStateRef = useRef({
+    isDragging: false,
+    startY: 0,
+    startScrollTop: 0,
+    scroller: null,
+  });
   const hasForecastSection = Boolean(segmentedControl || forecast);
   const forecastTop = 142;
   const widgetsTop = hasForecastSection ? 402 : contentTopInset;
   const contentHeight = widgetsTop + 880;
 
+  useEffect(() => {
+    const handleMouseMove = (event) => {
+      if (!dragStateRef.current.isDragging || !dragStateRef.current.scroller) return;
+
+      const deltaY = event.clientY - dragStateRef.current.startY;
+      dragStateRef.current.scroller.scrollTop = dragStateRef.current.startScrollTop - deltaY;
+    };
+
+    const endMouseDrag = () => {
+      dragStateRef.current.isDragging = false;
+      dragStateRef.current.scroller = null;
+      document.body.style.userSelect = '';
+      setIsDragging(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', endMouseDrag);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', endMouseDrag);
+    };
+  }, []);
+
+  const handleMouseDown = (event) => {
+    if (event.button !== 0) return;
+    if (event.target.closest('[data-drag-lock="true"]')) return;
+
+    const scroller = containerRef.current;
+    if (!scroller) return;
+
+    dragStateRef.current.isDragging = true;
+    dragStateRef.current.startY = event.clientY;
+    dragStateRef.current.startScrollTop = scroller.scrollTop;
+    dragStateRef.current.scroller = scroller;
+    document.body.style.userSelect = 'none';
+    setIsDragging(true);
+  };
+
+  const setScrollerRef = (node) => {
+    containerRef.current = node;
+
+    if (scrollRef && typeof scrollRef === 'object') {
+      scrollRef.current = node;
+    }
+  };
+
   return (
     <div
       className="ios-scroll-hidden"
-      ref={scrollRef}
+      ref={setScrollerRef}
+      onMouseDown={handleMouseDown}
       style={{
         boxSizing: 'border-box',
         position: 'relative',
@@ -40,6 +96,7 @@ const WeatherDetails = ({
         overflowY: 'auto',
         overflowX: 'hidden',
         overflowAnchor: 'none',
+        cursor: isDragging ? 'grabbing' : 'grab',
       }}
     >
       <div

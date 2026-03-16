@@ -1,4 +1,7 @@
-﻿import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+
+const FORECAST_CARD_HEIGHT = 146;
+const FORECAST_VIEWPORT_HEIGHT = 162;
 
 const weatherWidgetIcons = {
   moonCloudRain: '/widgets/small/moon-cloud-rain.png',
@@ -41,7 +44,7 @@ const ForecastCard = ({ hour, icon, degree, precipitation, isActive = false }) =
         padding: '16px 8px',
         gap: '16px',
         width: '60px',
-        height: '146px',
+        height: `${FORECAST_CARD_HEIGHT}px`,
         background: isActive ? '#48319D' : 'rgba(72, 49, 157, 0.2)',
         border: `1px solid ${isActive ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0.2)'}`,
         boxShadow: '5px 4px 10px rgba(0, 0, 0, 0.25), inset 1px 1px 0px rgba(255, 255, 255, 0.25)',
@@ -180,7 +183,7 @@ const ModalForecast = ({ activeTab = 'hourly', hourlyData = [], weeklyData = [] 
 
   const commonScrollStyle = {
     width: '371px',
-    height: '180px',
+    height: `${FORECAST_VIEWPORT_HEIGHT}px`,
     overflowX: 'auto',
     overflowY: 'hidden',
     flexShrink: 0,
@@ -193,13 +196,15 @@ const ModalForecast = ({ activeTab = 'hourly', hourlyData = [], weeklyData = [] 
 
   return (
     <div
+      data-drag-lock="true"
       style={{
         position: 'absolute',
         width: '371px',
-        height: '146px',
+        height: `${FORECAST_VIEWPORT_HEIGHT}px`,
         left: '20px',
         top: '69px',
-        overflow: 'hidden',
+        overflowX: 'hidden',
+        overflowY: 'visible',
       }}
     >
       <div
@@ -207,7 +212,7 @@ const ModalForecast = ({ activeTab = 'hourly', hourlyData = [], weeklyData = [] 
           display: 'flex',
           flexDirection: 'row',
           width: '742px',
-          height: '180px',
+          height: `${FORECAST_VIEWPORT_HEIGHT}px`,
           transform: activeTab === 'hourly' ? 'translateX(0px)' : 'translateX(-371px)',
           transition: 'transform 0.3s ease',
         }}
@@ -225,7 +230,7 @@ const ModalForecast = ({ activeTab = 'hourly', hourlyData = [], weeklyData = [] 
               alignItems: 'flex-start',
               gap: '12px',
               width: 'max-content',
-              height: '146px',
+              height: `${FORECAST_CARD_HEIGHT}px`,
               paddingRight: '20px',
             }}
           >
@@ -248,7 +253,7 @@ const ModalForecast = ({ activeTab = 'hourly', hourlyData = [], weeklyData = [] 
               alignItems: 'flex-start',
               gap: '12px',
               width: 'max-content',
-              height: '146px',
+              height: `${FORECAST_CARD_HEIGHT}px`,
               paddingRight: '20px',
             }}
           >
@@ -263,6 +268,3 @@ const ModalForecast = ({ activeTab = 'hourly', hourlyData = [], weeklyData = [] 
 };
 
 export default ModalForecast;
-
-
-
